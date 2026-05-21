@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Projekt-TowerDefence.vcxproj" />
+  <Project Path="Projekt-TowerDefence.vcxproj" Id="c7ca9533-5657-4d8b-a5ec-55b03bf2bd3e" />
 </Solution>
