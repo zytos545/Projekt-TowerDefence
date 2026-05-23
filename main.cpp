@@ -1,8 +1,10 @@
-#include "SFML/Graphics.hpp" 
-#include <iostream>
-using namespace std;
-int main() 
+#include "Game.h"
+
+int main()
 {
-    cout<< "gc";
+    Game game;
+
+    game.run();
+
     return 0;
 }
