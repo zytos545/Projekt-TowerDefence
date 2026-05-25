@@ -2,76 +2,140 @@
 #include <cstdlib>
 #include <ctime>
 
-
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <SFML/Graphics.hpp>
-
-// Zakładamy, że to jest wnętrze Twojego konstruktora Map::Map()
 Map::Map()
 {
-    srand(static_cast<unsigned>(time(NULL)));
-
+    const float tileSize = 50.f;
     sf::RectangleShape tile;
-    tile.setFillColor(sf::Color(160, 82, 45));
-    tile.setSize(sf::Vector2f(100.f, 100.f));
-
-    // Wirtualna siatka (np. 20 kolumn na 10 wierszy), która pamięta, gdzie są kafelki
-    std::vector<std::vector<bool>> grid(20, std::vector<bool>(10, false));
-
-    // Pozycja startowa
-    int currentX = 0;
-    int currentY = 3;
-
-    // Dodajemy pierwszy kafelek do siatki i na mapę
-    grid[currentX][currentY] = true;
-    tile.setPosition(currentX * 100.f, currentY * 100.f);
-    pathTiles.push_back(tile);
-
-    int lastDir = 0; 
-    int maxGridX = 11; 
-
-    while (currentX < maxGridX)
+    for (int i = 0;i < 10;i++)
     {
-        std::vector<int> possibleDirs;
-        possibleDirs.push_back(0);
-
-      
-        if (currentY > 1 && lastDir != 2)
-        {
-          
-            bool createsBlock = (currentX > 0 && grid[currentX - 1][currentY - 1]);
-            if (!createsBlock)
-            {
-                possibleDirs.push_back(1);
-            }
-        }
-
-  
-        if (currentY < 5 && lastDir != 1)
-        {
-            
-            bool createsBlock = (currentX > 0 && grid[currentX - 1][currentY + 1]);
-            if (!createsBlock)
-            {
-                possibleDirs.push_back(2);
-            }
-        }
-
-        
-        int dir = possibleDirs[rand() % possibleDirs.size()];
-
-        if (dir == 0) currentX++;
-        else if (dir == 1) currentY--;
-        else if (dir == 2) currentY++;
-
-        // Zapisujemy ruch
-        lastDir = dir;
-        grid[currentX][currentY] = true;
-
-        // Rysujemy kafelek
-        tile.setPosition(currentX * 100.f, currentY * 100.f);
+        if(i%2==0)
+        tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        tile.setPosition(40.f+i*50.f, 250.f);
+        pathTiles.push_back(tile);
+    }
+    float nexty,nextx;
+    for (int i = 0;i < 2;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nexty = 200 - i * 50.f;
+        tile.setPosition(490.f, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 2;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nextx = 440.f - 50 * i;
+        tile.setPosition(440.f-50*i, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 7;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nexty += 50;
+        tile.setPosition(nextx,nexty );
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 2;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nextx -= 50;
+        tile.setPosition(nextx, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 2;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nexty -= 50;
+        tile.setPosition(nextx, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 10;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nextx+=50;
+        tile.setPosition(nextx, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 3;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nexty -= 50;
+        tile.setPosition(nextx, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 2;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nextx+= 50;
+        tile.setPosition(nextx, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 5;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nexty += 50;
+        tile.setPosition(nextx, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 7;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nextx-= 50;
+        tile.setPosition(nextx, nexty);
+        pathTiles.push_back(tile);
+    }
+    for (int i = 0;i < 4;i++)
+    {
+        if (i % 2 == 0)
+            tile.setFillColor(sf::Color(150, 150, 150));
+        else
+            tile.setFillColor(sf::Color(150, 150, 200));
+        tile.setSize(sf::Vector2f(tileSize, tileSize));
+        nexty += 50;
+        tile.setPosition(nextx, nexty);
         pathTiles.push_back(tile);
     }
 }
