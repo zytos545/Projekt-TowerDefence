@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-
+#include "Map.h"
 class Game
 {
 public:
@@ -8,4 +8,5 @@ public:
     void run();
 private:
     sf::RenderWindow window;
+    Map map;
 };

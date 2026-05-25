@@ -1,4 +1,4 @@
-#include "Game.h"
+	#include "Game.h"
 
 Game::Game(): window(sf::VideoMode(1280, 720), "Tower Defence")
 {
@@ -18,6 +18,7 @@ void Game::run()
 			}
 		}
 		window.clear();
+		map.draw(window);
 		window.display();
 	}
 }
