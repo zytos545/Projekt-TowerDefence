@@ -1,18 +1,25 @@
 #pragma once
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <vector>
 
 using namespace std;
 
-class Map
+class Enemy
 {
 public:
-    Map();
-    vector<sf::Vector2f> getWaypoints();
+    Enemy(vector<sf::Vector2f> path);
+
+    void update(float deltaTime);
     void draw(sf::RenderWindow& window);
 
 private:
-    vector<sf::RectangleShape> pathTiles;
+    sf::CircleShape shape;
+
     vector<sf::Vector2f> waypoints;
+
+    int currentWaypoint;
+
+    float speed;
 };
