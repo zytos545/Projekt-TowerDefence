@@ -22,10 +22,10 @@ public:
     // Konstruktor
     Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage);
 
-    // Wirtualny destruktor - kluczowy przy polimorfizmie!
+    // Wirtualny destruktor 
     virtual ~Tower() = default;
 
-    // Główna logika (wirtualna, by móc ją nadpisać w innych wieżach)
+    // Główna logika 
     virtual void update(float deltaTime, const std::vector<Enemy>& enemies, std::vector<Projectile>& projectiles);
 
     // Rysowanie wieży

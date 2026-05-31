@@ -20,12 +20,12 @@ void Tower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vect
 
     const Enemy* target = nullptr;
 
-    // Szukamy wroga, który pokonał największy dystans na ścieżce
+    
     float maxProgress = -1.0f;
 
     sf::Vector2f towerPos = sprite.getPosition();
 
-    // Szukanie celu
+
     for (const auto& enemy : enemies) {
         sf::Vector2f enemyPos = enemy.getPosition();
 
@@ -33,9 +33,9 @@ void Tower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vect
         float dy = enemyPos.y - towerPos.y;
         float distance = std::sqrt(dx * dx + dy * dy);
 
-        // 1. Czy wróg jest w ogóle w zasięgu wieży?
+        
         if (distance <= range) {
-            // 2. Szukamy tego, który zaszedł najdalej
+            
             if (enemy.getDistanceTraveled() > maxProgress) {
                 maxProgress = enemy.getDistanceTraveled();
                 target = &enemy;
@@ -43,14 +43,14 @@ void Tower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vect
         }
     }
 
-    // Sprawdzenie warunków do strzału
+   
     if (target != nullptr && timeSinceLastAttack >= attackCooldown) {
         timeSinceLastAttack = 0.0f;
 
         sf::Vector2f targetPos = target->getPosition();
         projectiles.push_back(Projectile(towerPos, targetPos, damage));
 
-        // Obrót wieżyczki w stronę celu
+      
         float angle = std::atan2(targetPos.y - towerPos.y, targetPos.x - towerPos.x) * 180.0f / 3.14159265f;
         sprite.setRotation(angle);
     }

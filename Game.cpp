@@ -4,15 +4,14 @@
 #include "MachinegunTower.h"
 #include <algorithm>
 
-// Konstruktor - tutaj inicjalizujemy okno i stan początkowy
-Game::Game() : window(sf::VideoMode(800, 600), "Tower Defense"), currentSelection(SelectedTowerType::SNIPER) {
+// Konstruktor - łączymy mapę z Twoim oknem i wektorem wrogów
+Game::Game() : window(sf::VideoMode(1280, 720), "Tower Defense"), currentSelection(SelectedTowerType::SNIPER), map() {
     window.setFramerateLimit(60);
 
-    // Dodajemy jednego testowego wroga na środku ekranu (pozycja 400x300, 100 HP)
-    enemies.push_back(Enemy(sf::Vector2f(400.f, 300.f), 100));
+    // Zamiast sztywnych kordynatów, dajemy pierwszemu wrogowi ścieżkę od kolegi!
+    enemies.push_back(Enemy(map.getWaypoints()));
 }
 
-// Główna pętla gry
 void Game::run() {
     sf::Clock clock;
 
@@ -25,8 +24,6 @@ void Game::run() {
     }
 }
 
-
-// klawiatura, myszka
 void Game::processEvents() {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -34,12 +31,10 @@ void Game::processEvents() {
             window.close();
         }
 
-        // Przechwytywanie wciśnięcia klawisza z klawiatury
         if (event.type == sf::Event::KeyPressed) {
             handleKeyPress(event.key.code);
         }
 
-        // Przechwytywanie kliknięcia lewym przyciskiem myszy
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Left) {
 
@@ -56,13 +51,12 @@ void Game::processEvents() {
 
                 bool isOccupied = false;
                 for (const auto& tower : towers) {
-                    if (tower->getPosition() == centerPos) { 
+                    if (tower->getPosition() == centerPos) {
                         isOccupied = true;
                         break;
                     }
                 }
 
-                // Tworzenie odpowiedniego typu wieżyczki
                 if (!isOccupied && currentSelection != SelectedTowerType::NONE) {
                     if (currentSelection == SelectedTowerType::SNIPER) {
                         towers.push_back(std::make_unique<SniperTower>(centerPos));
@@ -80,51 +74,59 @@ void Game::processEvents() {
 }
 
 void Game::update(float deltaTime) {
-    
     for (auto& enemy : enemies) {
         enemy.update(deltaTime);
     }
 
-    
     for (auto& tower : towers) {
         tower->update(deltaTime, enemies, projectiles);
     }
 
-    
     for (auto& projectile : projectiles) {
         projectile.update(deltaTime);
 
-        
         if (projectile.getIsActive()) {
             for (auto& enemy : enemies) {
                 if (enemy.isAlive() && projectile.getBounds().intersects(enemy.getBounds())) {
-
-                    enemy.takeDamage(projectile.getDamage()); 
-                    projectile.deactivate();                  
-                    break; 
+                    enemy.takeDamage(projectile.getDamage());
+                    projectile.deactivate();
+                    break;
                 }
             }
         }
     }
 
-    // 4. Czyszczenie pamięci (usuwanie martwych wrogów i zniszczonych pocisków)
     projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
         [](const Projectile& p) { return !p.getIsActive(); }), projectiles.end());
 
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const Enemy& e) { return !e.isAlive(); }), enemies.end());
 }
+
 void Game::render() {
     window.clear(sf::Color::Black);
-    for (const auto& tower : towers) {
-        tower.draw(window);
+
+    // 1. Najpierw rysujemy mapę jako tło
+    map.draw(window);
+
+    // 2. Potem wrogów
+    for (auto& enemy : enemies) {
+        enemy.draw(window);
     }
-    
+
+    // 3. Potem wieże (używamy -> zamiast . bo to inteligentne wskaźniki!)
+    for (const auto& tower : towers) {
+        tower->draw(window);
+    }
+
+    // 4. Na samym końcu pociski, żeby leciały "nad" wszystkim
     for (const auto& projectile : projectiles) {
         projectile.draw(window);
     }
+
     window.display();
 }
+
 void Game::handleKeyPress(sf::Keyboard::Key key) {
     switch (key) {
     case sf::Keyboard::Num1:
@@ -136,7 +138,7 @@ void Game::handleKeyPress(sf::Keyboard::Key key) {
     case sf::Keyboard::Num3:
         currentSelection = SelectedTowerType::SHOT_GUN;
         break;
-    case sf::Keyboard::Escape: 
+    case sf::Keyboard::Escape:
         currentSelection = SelectedTowerType::NONE;
         break;
     default:
