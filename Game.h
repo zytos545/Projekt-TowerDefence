@@ -14,7 +14,7 @@ private:
 
     
     Map map;
-
+    int money;
     
     std::vector<Enemy> enemies;
     std::vector<Projectile> projectiles;

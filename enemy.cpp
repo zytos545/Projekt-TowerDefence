@@ -10,7 +10,7 @@ Enemy::Enemy(vector<sf::Vector2f> path)
 
  
     hp = 100;
-
+    reward = 15;
     shape.setRadius(20.f);
     shape.setFillColor(sf::Color::Red);
     shape.setOrigin(20.f, 20.f);
@@ -32,7 +32,7 @@ void Enemy::update(float deltaTime)
 {
     if (currentWaypoint >= waypoints.size())
     {
-        return; // Wróg doszedł do końca ścieżki
+        return; 
     }
 
     sf::Vector2f position = shape.getPosition();
@@ -60,18 +60,21 @@ sf::Vector2f Enemy::getPosition() const {
 }
 
 sf::FloatRect Enemy::getBounds() const {
-    return shape.getGlobalBounds(); // Zwraca hitbox wroga
+    return shape.getGlobalBounds(); 
 }
 
 void Enemy::takeDamage(int damage) {
-    hp -= damage; // Odejmowanie punktów zdrowia
+    hp -= damage; 
 }
 
 bool Enemy::isAlive() const {
-    return hp > 0; // Sprawdza, czy wróg wciąż żyje
+    return hp > 0; 
 }
 
 float Enemy::getDistanceTraveled() const {
     
     return static_cast<float>(currentWaypoint);
+}
+int Enemy::getReward() const {
+    return reward;
 }

@@ -4,11 +4,12 @@
 #include "MachinegunTower.h"
 #include <algorithm>
 
-// Konstruktor - łączymy mapę z Twoim oknem i wektorem wrogów
-Game::Game() : window(sf::VideoMode(1280, 720), "Tower Defense"), currentSelection(SelectedTowerType::SNIPER), map() {
-    window.setFramerateLimit(60);
 
-    // Zamiast sztywnych kordynatów, dajemy pierwszemu wrogowi ścieżkę od kolegi!
+Game::Game() : window(sf::VideoMode(1280, 720), "Tower Defense"), currentSelection(SelectedTowerType::SNIPER), map() {
+    
+    window.setFramerateLimit(60);
+    money = 150;
+    
     enemies.push_back(Enemy(map.getWaypoints()));
 }
 
@@ -106,20 +107,20 @@ void Game::update(float deltaTime) {
 void Game::render() {
     window.clear(sf::Color::Black);
 
-    // 1. Najpierw rysujemy mapę jako tło
+   
     map.draw(window);
 
-    // 2. Potem wrogów
+   
     for (auto& enemy : enemies) {
         enemy.draw(window);
     }
 
-    // 3. Potem wieże (używamy -> zamiast . bo to inteligentne wskaźniki!)
+    
     for (const auto& tower : towers) {
         tower->draw(window);
     }
 
-    // 4. Na samym końcu pociski, żeby leciały "nad" wszystkim
+   
     for (const auto& projectile : projectiles) {
         projectile.draw(window);
     }

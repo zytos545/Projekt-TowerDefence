@@ -67,3 +67,14 @@ sf::Vector2f Tower::getPosition() const {
 float Tower::getRange() const {
     return range;
 }
+void Tower::upgrade() {
+    if (level < maxLevel) {
+        level++;
+        damage += 10;        
+        range += 20.0f;      
+    }
+}
+
+int Tower::getLevel() const {
+    return level;
+}

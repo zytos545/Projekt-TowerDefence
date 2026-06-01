@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-// Deklaracje zapowiadające
+
 class Enemy;
 class Projectile;
 
@@ -17,21 +17,15 @@ protected:
     float attackCooldown;
     float timeSinceLastAttack;
     int damage;
-
+    int level;
+    int maxLevel;
 public:
-    // Konstruktor
     Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage);
-
-    // Wirtualny destruktor 
     virtual ~Tower() = default;
-
-    // Główna logika 
     virtual void update(float deltaTime, const std::vector<Enemy>& enemies, std::vector<Projectile>& projectiles);
-
-    // Rysowanie wieży
+    virtual void upgrade();
+    int getLevel() const;
     void draw(sf::RenderTarget& target) const;
-
-    // Metody dostępowe (gettery)
     sf::Vector2f getPosition() const;
     float getRange() const;
 };
