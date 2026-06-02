@@ -78,3 +78,7 @@ void Tower::upgrade() {
 int Tower::getLevel() const {
     return level;
 }
+sf::FloatRect Tower::getBounds() const {
+    
+    return sprite.getGlobalBounds();
+}

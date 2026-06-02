@@ -28,4 +28,5 @@ public:
     void draw(sf::RenderTarget& target) const;
     sf::Vector2f getPosition() const;
     float getRange() const;
+    sf::FloatRect getBounds() const;
 };

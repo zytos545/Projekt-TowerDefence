@@ -39,7 +39,7 @@ void Game::processEvents() {
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Left) {
 
-                sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+                sf::Vector2i pixelPos(event.mouseButton.x, event.mouseButton.y);
                 sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
 
                 const int TILE_SIZE = 64;
@@ -71,10 +71,55 @@ void Game::processEvents() {
                 }
             }
         }
+        
+
+        if (event.type == sf::Event::MouseButtonPressed) {
+            //(PPM) - Ulepszanie
+            if (event.mouseButton.button == sf::Mouse::Right) {
+
+                
+                sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+                
+                for (auto& tower : towers) {
+
+                    
+                    if (tower->getBounds().contains(mousePos)) {
+
+                        
+                        int upgradeCost = 100;
+
+                        
+                        if (money >= upgradeCost && tower->getLevel() < 3) {
+                            money -= upgradeCost;    
+                            tower->upgrade();        
+                            break;                   
+                        }
+                    }
+                }
+            }
+
+            
+        }
     }
 }
 
 void Game::update(float deltaTime) {
+    if (currentSelection != SelectedTowerType::NONE) {
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+        const int TILE_SIZE = 64;
+
+        
+        int gridX = static_cast<int>(mousePos.x) / TILE_SIZE;
+        int gridY = static_cast<int>(mousePos.y) / TILE_SIZE;
+
+        
+        sf::Vector2f snappedPos(gridX * TILE_SIZE + TILE_SIZE / 2.0f,
+            gridY * TILE_SIZE + TILE_SIZE / 2.0f);
+
+        previewSprite.setPosition(snappedPos);
+    }
     for (auto& enemy : enemies) {
         enemy.update(deltaTime);
     }
@@ -109,7 +154,9 @@ void Game::render() {
 
    
     map.draw(window);
-
+    if (currentSelection != SelectedTowerType::NONE) {
+        window.draw(previewSprite);
+    }
    
     for (auto& enemy : enemies) {
         enemy.draw(window);
@@ -129,20 +176,28 @@ void Game::render() {
 }
 
 void Game::handleKeyPress(sf::Keyboard::Key key) {
-    switch (key) {
-    case sf::Keyboard::Num1:
+    if (key == sf::Keyboard::Num1) {
         currentSelection = SelectedTowerType::SNIPER;
-        break;
-    case sf::Keyboard::Num2:
+        previewTexture.loadFromFile("asets/textures/sniper2.png");
+        previewSprite.setTexture(previewTexture, true);
+        previewSprite.setColor(sf::Color(255, 255, 255, 150)); 
+        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
+    }
+    else if (key == sf::Keyboard::Num2) {
         currentSelection = SelectedTowerType::MACHINE_GUN;
-        break;
-    case sf::Keyboard::Num3:
+        previewTexture.loadFromFile("asets/textures/machine2.png"); 
+        previewSprite.setTexture(previewTexture, true);
+        previewSprite.setColor(sf::Color(255, 255, 255, 150));
+        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
+    }
+    else if (key == sf::Keyboard::Num3) {
         currentSelection = SelectedTowerType::SHOT_GUN;
-        break;
-    case sf::Keyboard::Escape:
+        previewTexture.loadFromFile("asets/textures/shot2.png");
+        previewSprite.setTexture(previewTexture, true);
+        previewSprite.setColor(sf::Color(255, 255, 255, 150));
+        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
+    }
+    else if (key == sf::Keyboard::Escape) {
         currentSelection = SelectedTowerType::NONE;
-        break;
-    default:
-        break;
     }
 }

@@ -12,10 +12,9 @@ class Game {
 private:
     sf::RenderWindow window;
 
-    
     Map map;
-    int money;
-    
+    int money; 
+
     std::vector<Enemy> enemies;
     std::vector<Projectile> projectiles;
     std::vector<std::unique_ptr<Tower>> towers;
@@ -23,7 +22,11 @@ private:
     enum class SelectedTowerType { NONE, SNIPER, MACHINE_GUN, SHOT_GUN };
     SelectedTowerType currentSelection;
 
-    // --- METODY ---
+    
+    sf::Texture previewTexture;
+    sf::Sprite previewSprite;
+
+   
     void processEvents();
     void handleKeyPress(sf::Keyboard::Key key);
     void update(float deltaTime);
