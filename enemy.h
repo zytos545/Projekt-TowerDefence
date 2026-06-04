@@ -1,6 +1,4 @@
 #pragma once
-#pragma once
-
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -19,6 +17,13 @@ public:
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
 
+    // metody dla wiezyczek i pociskow
+    sf::Vector2f getPosition() const;
+    float getDistanceTraveled() const;
+    sf::FloatRect getBounds() const;
+    void takeDamage(int damage);
+    bool isAlive() const;
+    int getReward() const;
 private:
     sf::CircleShape shape;
     vector<sf::Vector2f> waypoints;
