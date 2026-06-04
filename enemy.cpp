@@ -1,27 +1,44 @@
 #include "Enemy.h"
 #include <cmath>
 
-Enemy::Enemy(vector<sf::Vector2f> path)
+Enemy::Enemy(vector<sf::Vector2f> path,EnemyType type1)
 {
+    this->type = type1;
     waypoints = path;
-
     currentWaypoint = 0;
-
-    speed = 100.f;
-
     shape.setRadius(20.f);
-    shape.setFillColor(sf::Color::Red);
     shape.setOrigin(20.f, 20.f);
-
-    if (waypoints.size() > 0)
+    if (type == Normal)
     {
-        shape.setPosition(waypoints[0]);
+        maxHealth = 100;
+        health = maxHealth;
+        speed = 100.f;
+        reward = 10;
+        shape.setFillColor(sf::Color::Red);
+    }
+    else if (type == Fast)
+    {
+        maxHealth = 60;
+        health = maxHealth;
+        speed = 160.f;
+        reward = 15;
+        shape.setFillColor(sf::Color::Yellow);
+    }
+    else if (type == Tank)
+    {
+        maxHealth = 250;
+        health = maxHealth;
+        speed = 60.f;
+        reward = 25;
+        shape.setFillColor(sf::Color::Blue);
     }
 }
+
 void Enemy::draw(sf::RenderWindow& window)
 {
     window.draw(shape);
 }
+
 void Enemy::update(float deltaTime)
 {
     if (currentWaypoint >= waypoints.size())

@@ -7,7 +7,6 @@ Game::Game()
 {
     spawnTimer = 0.f;
     spawnInterval = 2.f;
-    enemies.push_back(Enemy(map.getWaypoints()));
 }
 
 void Game::run()
@@ -27,11 +26,12 @@ void Game::run()
                 window.close();
             }
         }
+
         spawnTimer += deltaTime;
 
         if (spawnTimer >= spawnInterval)
         {
-            enemies.push_back(Enemy(map.getWaypoints()));
+            enemies.push_back(Enemy(map.getWaypoints(),Normal));
 
             spawnTimer = 0.f;
         }
