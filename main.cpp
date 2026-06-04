@@ -8,12 +8,3 @@ int main()
 
     return 0;
 }
-
-int main()
-{
-    Game game;
-
-    game.run();
-
-    return 0;
-}
