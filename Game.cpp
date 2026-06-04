@@ -1,10 +1,13 @@
-	#include "Game.h"
+#include "Game.h"
+#include <vector>
 
 Game::Game()
     : window(sf::VideoMode(1280, 720), "Tower Defence"),
-    map(),
-    enemy(map.getWaypoints())
+    map()
 {
+    spawnTimer = 0.f;
+    spawnInterval = 2.f;
+    enemies.push_back(Enemy(map.getWaypoints()));
 }
 
 void Game::run()
@@ -24,13 +27,26 @@ void Game::run()
                 window.close();
             }
         }
+        spawnTimer += deltaTime;
 
-        enemy.update(deltaTime);
+        if (spawnTimer >= spawnInterval)
+        {
+            enemies.push_back(Enemy(map.getWaypoints()));
+
+            spawnTimer = 0.f;
+        }
+        for (int i = 0; i < enemies.size(); i++)
+        {
+            enemies[i].update(deltaTime);
+        }
 
         window.clear();
 
         map.draw(window);
-        enemy.draw(window);
+        for (int i = 0; i < enemies.size(); i++)
+        {
+            enemies[i].draw(window);
+        }
 
         window.display();
     }

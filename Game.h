@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Map.h"
 #include "enemy.h"
+#include <vector>
 class Game
 {
 public:
@@ -10,5 +11,7 @@ public:
 private:
     sf::RenderWindow window;
     Map map;
-    Enemy enemy;
+    vector<Enemy>enemies;
+    float spawnTimer;
+    float spawnInterval;
 };
