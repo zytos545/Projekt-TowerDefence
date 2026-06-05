@@ -5,24 +5,8 @@
 #include <memory>
 #include "Tower.h"
 #include "enemy.h"
-<<<<<<< HEAD
-#include <vector>
-class Game
-{
-public:
-    Game();
-    void run();
-private:
-    sf::RenderWindow window;
-    Map map;
-    vector<Enemy>enemies;
-    float spawnTimer;
-    float spawnInterval;
-};
-=======
 #include "Projectile.h"
 #include "Map.h"
-
 class Game {
 private:
     sf::RenderWindow window;
@@ -40,7 +24,8 @@ private:
     
     sf::Texture previewTexture;
     sf::Sprite previewSprite;
-
+    float spawnTimer;
+    float spawnInterval;
    
     void processEvents();
     void handleKeyPress(sf::Keyboard::Key key);
@@ -51,4 +36,4 @@ public:
     Game();
     void run();
 };
->>>>>>> Towers_and_others
+

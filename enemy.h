@@ -29,8 +29,8 @@ private:
     vector<sf::Vector2f> waypoints;
     int currentWaypoint;
     float speed;
-    int health;
-    int maxHealth;
+    int hp;
+    int maxHp;
     int reward;
     EnemyType type;
 };

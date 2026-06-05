@@ -1,36 +1,43 @@
 #include "enemy.h"
-#include <cmath> 
+#include <cmath>
 
-Enemy::Enemy(vector<sf::Vector2f> path,EnemyType type1)
+Enemy::Enemy(vector<sf::Vector2f> path, EnemyType type1)
 {
     this->type = type1;
     waypoints = path;
     currentWaypoint = 0;
+
     shape.setRadius(20.f);
     shape.setOrigin(20.f, 20.f);
+
     if (type == Normal)
     {
-        maxHealth = 100;
-        health = maxHealth;
+        maxHp = 100;
+        hp = maxHp;
         speed = 100.f;
         reward = 10;
         shape.setFillColor(sf::Color::Red);
     }
     else if (type == Fast)
     {
-        maxHealth = 60;
-        health = maxHealth;
+        maxHp = 60;
+        hp = maxHp;
         speed = 160.f;
         reward = 15;
         shape.setFillColor(sf::Color::Yellow);
     }
     else if (type == Tank)
     {
-        maxHealth = 250;
-        health = maxHealth;
+        maxHp = 250;
+        hp = maxHp;
         speed = 60.f;
         reward = 25;
         shape.setFillColor(sf::Color::Blue);
+    }
+
+    if (waypoints.size() > 0)
+    {
+        shape.setPosition(waypoints[0]);
     }
 }
 
@@ -43,7 +50,7 @@ void Enemy::update(float deltaTime)
 {
     if (currentWaypoint >= waypoints.size())
     {
-        return; 
+        return;
     }
 
     sf::Vector2f position = shape.getPosition();
@@ -64,28 +71,32 @@ void Enemy::update(float deltaTime)
     shape.move(direction * speed * deltaTime);
 }
 
-
-
-sf::Vector2f Enemy::getPosition() const {
+sf::Vector2f Enemy::getPosition() const
+{
     return shape.getPosition();
 }
 
-sf::FloatRect Enemy::getBounds() const {
-    return shape.getGlobalBounds(); 
+sf::FloatRect Enemy::getBounds() const
+{
+    return shape.getGlobalBounds();
 }
 
-void Enemy::takeDamage(int damage) {
-    hp -= damage; 
+void Enemy::takeDamage(int damage)
+{
+    hp -= damage;
 }
 
-bool Enemy::isAlive() const {
-    return hp > 0; 
+bool Enemy::isAlive() const
+{
+    return hp > 0;
 }
 
-float Enemy::getDistanceTraveled() const {
-    
+float Enemy::getDistanceTraveled() const
+{
     return static_cast<float>(currentWaypoint);
 }
-int Enemy::getReward() const {
+
+int Enemy::getReward() const
+{
     return reward;
 }
