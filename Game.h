@@ -13,7 +13,11 @@ private:
 
     Map map;
     int money; 
-
+    int playerHp;
+    bool gameover;
+    bool gamewon;
+    enum class GameMode {easy,medium,hard};
+    GameMode gamemode;
     std::vector<Enemy> enemies;
     std::vector<Projectile> projectiles;
     std::vector<std::unique_ptr<Tower>> towers;
@@ -31,6 +35,14 @@ private:
     void handleKeyPress(sf::Keyboard::Key key);
     void update(float deltaTime);
     void render();
+    vector<vector<EnemyType>>createWaves();
+    //fale przeciwnikow
+    vector<vector<EnemyType>> waves;
+int currentWave;
+int currentEnemyInWave;
+bool waveActive;
+float timeBetweenWaves;
+float waveBreakTimer;
 
 public:
     Game();

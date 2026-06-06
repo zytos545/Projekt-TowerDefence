@@ -13,7 +13,7 @@ class Enemy
 {
 public:
     Enemy(vector<sf::Vector2f> path,EnemyType type);
-
+    bool reachedEnd() const;
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
 
