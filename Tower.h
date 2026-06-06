@@ -12,7 +12,7 @@ class Tower {
 protected:
     sf::Sprite sprite;
     sf::Texture texture;
-
+    
     float range;
     float attackCooldown;
     float timeSinceLastAttack;

@@ -3,11 +3,16 @@
 #include <vector>
 
 using namespace std;
-
+enum EnemyType
+{
+    Normal,
+    Fast,
+    Tank
+};
 class Enemy
 {
 public:
-    Enemy(vector<sf::Vector2f> path);
+    Enemy(vector<sf::Vector2f> path,EnemyType type);
 
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
@@ -19,12 +24,15 @@ public:
     void takeDamage(int damage);
     bool isAlive() const;
     int getReward() const;
+    int getExp() const;
 private:
     sf::CircleShape shape;
     vector<sf::Vector2f> waypoints;
     int currentWaypoint;
     float speed;
-    int reward; 
-    
     int hp;
+    int maxHp;
+    int reward;
+    int exp;
+    EnemyType type;
 };

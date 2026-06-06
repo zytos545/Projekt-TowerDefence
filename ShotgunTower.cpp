@@ -12,7 +12,7 @@ void ShotgunTower::update(float deltaTime, const std::vector<Enemy>& enemies, st
     
     timeSinceLastAttack += deltaTime;
 
-    //szukane wrogow
+    
     const Enemy* target = nullptr;
     float minDistance = range;
 
