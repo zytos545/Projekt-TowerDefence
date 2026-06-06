@@ -4,7 +4,7 @@
 #include "SniperTower.h"
 #include "ShotgunTower.h"
 #include "MachinegunTower.h"
-
+#include "GameState.h"
 Game::Game()
     : window(sf::VideoMode(1280, 720), "Tower Defence"),
     currentSelection(SelectedTowerType::SNIPER),
@@ -13,7 +13,6 @@ Game::Game()
     window.setFramerateLimit(60);
 
     money = 150;
-
     spawnTimer = 0.f;
     spawnInterval = 2.f;
 }
@@ -151,9 +150,23 @@ void Game::update(float deltaTime)
         enemy.update(deltaTime);
     }
 
+    // Zmienne do obs³ugi najechania myszk¹ (Hover)
+    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    bool isHovering = false;
+    std::string hoveredName = "Brak";
+    int hoveredUpgradeCost = 0;
+
+    // Rozszerzona istniej¹ca pêtla towers
     for (auto& tower : towers)
     {
         tower->update(deltaTime, enemies, projectiles);
+
+        if (!isHovering && tower->getBounds().contains(mousePos))
+        {
+            isHovering = true;
+            hoveredName = tower->getName(); // Wymaga metody getName() w klasach wie¿
+            hoveredUpgradeCost = 100;       // Docelowo tower->getUpgradeCost()
+        }
     }
 
     for (auto& projectile : projectiles)
@@ -202,13 +215,57 @@ void Game::update(float deltaTime)
         ),
         enemies.end()
     );
-    hud.update(money,experience);
+
+
+    // ... (koniec pêtli usuwaj¹cych przeciwników)
+
+    GameState currentState;
+    currentState.money = money;
+    currentState.playerHP = 100;
+    currentState.currentWave = 1;
+    currentState.expe = experience;
+
+    if (isHovering)
+    {
+        currentState.towerName = hoveredName;
+        currentState.upgradeCost = hoveredUpgradeCost;
+        currentState.isUpgrade = true; // Najechanie na postawion¹ wie¿ê
+    }
+    else if (currentSelection != SelectedTowerType::NONE)
+    {
+        currentState.isUpgrade = false; // Budowa nowej wie¿y
+        if (currentSelection == SelectedTowerType::SNIPER)
+        {
+            currentState.towerName = "Snajper";
+            currentState.upgradeCost = SniperTower::PRICE;
+        }
+        else if (currentSelection == SelectedTowerType::MACHINE_GUN)
+        {
+            currentState.towerName = "Karabin";
+            currentState.upgradeCost = MachineGunTower::PRICE;
+        }
+        else if (currentSelection == SelectedTowerType::SHOT_GUN)
+        {
+            currentState.towerName = "Strzelba";
+            currentState.upgradeCost = ShotgunTower::PRICE;
+        }
+    }
+    else
+    {
+        currentState.towerName = "Brak";
+        currentState.upgradeCost = 0;
+        currentState.isUpgrade = false;
+    }
+
+    hud.update(currentState);
 }
 
 void Game::render()
 {
     window.clear(sf::Color::Black);
 
+    // 1. Rysowanie œwiata gry przez kamerê worldView
+ 
     map.draw(window);
 
     if (currentSelection != SelectedTowerType::NONE)
@@ -230,7 +287,11 @@ void Game::render()
     {
         projectile.draw(window);
     }
+
+    // 2. Rysowanie interfejsu przez kamerê hudView
+   
     hud.draw(window);
+
     window.display();
 }
 

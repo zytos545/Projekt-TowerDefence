@@ -14,7 +14,7 @@ private:
     sf::RenderWindow window;
 
     Map map;
-    int money; 
+    int money;
     int experience;
     HUD hud;
     std::vector<Enemy> enemies;
@@ -24,12 +24,12 @@ private:
     float spawnInterval;
     enum class SelectedTowerType { NONE, SNIPER, MACHINE_GUN, SHOT_GUN };
     SelectedTowerType currentSelection;
+   
 
-    
     sf::Texture previewTexture;
     sf::Sprite previewSprite;
 
-   
+
     void processEvents();
     void handleKeyPress(sf::Keyboard::Key key);
     void update(float deltaTime);

@@ -19,8 +19,9 @@ protected:
     int damage;
     int level;
     int maxLevel;
+    std::string name;
 public:
-    Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage);
+    Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage,std::string n);
     virtual ~Tower() = default;
     virtual void update(float deltaTime, const std::vector<Enemy>& enemies, std::vector<Projectile>& projectiles);
     virtual void upgrade();
@@ -28,5 +29,6 @@ public:
     void draw(sf::RenderTarget& target) const;
     sf::Vector2f getPosition() const;
     float getRange() const;
+    std::string getName() const;
     sf::FloatRect getBounds() const;
 };

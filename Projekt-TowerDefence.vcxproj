@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="enemy.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="MachinegunTower.h" />
     <ClInclude Include="Map.h" />
