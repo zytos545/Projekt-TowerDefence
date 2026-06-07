@@ -5,22 +5,19 @@
 #include <vector>
 #include <memory>
 #include "Tower.h"
+#include "GameState.h"
 #include "enemy.h"
 #include "Projectile.h"
 #include "Map.h"
 class Game {
 private:
     sf::RenderWindow window;
-
     Map map;
-    int money; 
-    int playerHp;
+    GameState gameState;
     bool gameover;
     bool gamewon;
     enum class GameMode {easy,medium,hard};
     GameMode gamemode;
-    int money;
-    int experience;
     HUD hud;
     std::vector<Enemy> enemies;
     std::vector<Projectile> projectiles;
@@ -41,7 +38,6 @@ private:
     vector<vector<EnemyType>>createWaves();
     //fale przeciwnikow
     vector<vector<EnemyType>> waves;
-int currentWave;
 int currentEnemyInWave;
 bool waveActive;
 float timeBetweenWaves;

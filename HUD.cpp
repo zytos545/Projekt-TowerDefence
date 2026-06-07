@@ -1,4 +1,5 @@
 #include "HUD.h"
+#include "GameState.h"
 #include <string>
 #include <iostream>
 

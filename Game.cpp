@@ -9,14 +9,14 @@
 
 
 Game::Game()
-    : window(sf::VideoMode(1280, 720), "Tower Defence"),
+    : window(sf::VideoMode(1920, 1080), "Tower Defence"),
     currentSelection(SelectedTowerType::SNIPER),
     map()
 {
     window.setFramerateLimit(60);
     gameover = false;
-    playerHp = 100;
-    money = 150;
+    gameState.playerHP = 100;
+    gameState.money = 150;
 
     gamewon = false;
 
@@ -26,7 +26,7 @@ Game::Game()
     spawnInterval = 2.f;
     waves = createWaves();
 
-    currentWave = 0;
+    gameState.currentWave = 0;
     currentEnemyInWave = 0;
 
     waveActive = true;
@@ -99,23 +99,23 @@ void Game::processEvents()
                 if (!isOccupied && currentSelection != SelectedTowerType::NONE)
                 {
 
-                    if (currentSelection == SelectedTowerType::SNIPER && money >= SniperTower::PRICE)
+                    if (currentSelection == SelectedTowerType::SNIPER && gameState.money >= SniperTower::PRICE)
 
                     {
                         towers.push_back(std::make_unique<SniperTower>(centerPos));
-                        money -= SniperTower::PRICE;
+                        gameState.money -= SniperTower::PRICE;
                     }
 
-                    else if (currentSelection == SelectedTowerType::MACHINE_GUN && money >= MachineGunTower::PRICE)
+                    else if (currentSelection == SelectedTowerType::MACHINE_GUN && gameState.money >= MachineGunTower::PRICE)
                     {
                         towers.push_back(std::make_unique<MachineGunTower>(centerPos));
-                        money -= MachineGunTower::PRICE;
+                        gameState.money -= MachineGunTower::PRICE;
                     }
 
-                    else if (currentSelection == SelectedTowerType::SHOT_GUN && money >= ShotgunTower::PRICE)
+                    else if (currentSelection == SelectedTowerType::SHOT_GUN && gameState.money >= ShotgunTower::PRICE)
                     {
                         towers.push_back(std::make_unique<ShotgunTower>(centerPos));
-                        money -= ShotgunTower::PRICE;
+                        gameState.money -= ShotgunTower::PRICE;
                     }
                 }
             }
@@ -130,9 +130,9 @@ void Game::processEvents()
                     {
                         int upgradeCost = 100;
 
-                        if (money >= upgradeCost && tower->getLevel() < 3)
+                        if (gameState.money >= upgradeCost && tower->getLevel() < 3)
                         {
-                            money -= upgradeCost;
+                            gameState.money -= upgradeCost;
                             tower->upgrade();
                             break;
                         }
@@ -150,7 +150,7 @@ void Game::update(float deltaTime)
         return;
     }
 
-    if (currentWave < waves.size())
+    if (gameState.currentWave < waves.size())
     {
         if (waveActive)
         {
@@ -158,9 +158,9 @@ void Game::update(float deltaTime)
 
             if (spawnTimer >= spawnInterval)
             {
-                if (currentEnemyInWave < waves[currentWave].size())
+                if (currentEnemyInWave < waves[gameState.currentWave].size())
                 {
-                    EnemyType enemyType = waves[currentWave][currentEnemyInWave];
+                    EnemyType enemyType = waves[gameState.currentWave][currentEnemyInWave];
 
                     enemies.push_back(Enemy(map.getWaypoints(), enemyType));
 
@@ -183,7 +183,7 @@ void Game::update(float deltaTime)
 
                 if (waveBreakTimer >= timeBetweenWaves)
                 {
-                    currentWave++;
+                    gameState.currentWave++;
                     currentEnemyInWave = 0;
                     waveActive = true;
                     spawnTimer = 0.f;
@@ -213,17 +213,18 @@ void Game::update(float deltaTime)
     {
         enemy.update(deltaTime);
     }
+//tracenie HP gracza
     for (int i = 0; i < enemies.size(); i++)
     {
         if (enemies[i].reachedEnd())
         {
-            playerHp--;
+            gameState.playerHP--;
 
             enemies.erase(enemies.begin() + i);
 
             i--;
 
-            if (playerHp <= 0)
+            if (gameState.playerHP <= 0)
             {
                 gameover = true;
             }
@@ -263,8 +264,8 @@ void Game::update(float deltaTime)
                     enemy.takeDamage(projectile.getDamage());
                     if (!enemy.isAlive())
                     {
-                        money += enemy.getReward();
-                        experience += enemy.getExp();
+                        gameState.money += enemy.getReward();
+                        gameState.expe += enemy.getExp();
                     }
                     projectile.deactivate();
                     break;
@@ -284,7 +285,7 @@ void Game::update(float deltaTime)
         ),
         projectiles.end()
     );
-
+//kasowanie przeciwnikow
     enemies.erase(
         std::remove_if(
             enemies.begin(),
@@ -296,7 +297,7 @@ void Game::update(float deltaTime)
         ),
         enemies.end()
     );
-    if (currentWave >= waves.size() && enemies.empty())
+    if (gameState.currentWave >= waves.size() && enemies.empty())
     {
         gamewon = true;
         gameover = true;
@@ -304,10 +305,10 @@ void Game::update(float deltaTime)
 
 
     GameState currentState;
-    currentState.money = money;
-    currentState.playerHP = 100;
-    currentState.currentWave = 1;
-    currentState.expe = experience;
+    currentState.money = gameState.money;
+    currentState.playerHP = gameState.playerHP;
+    currentState.currentWave = gameState.currentWave;
+    currentState.expe = gameState.expe;
 
     if (isHovering)
     {

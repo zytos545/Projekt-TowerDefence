@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "GameState.h"
 
+
 class HUD {
 private:
     sf::Font font;
