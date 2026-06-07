@@ -5,6 +5,9 @@
 #include "ShotgunTower.h"
 #include "MachinegunTower.h"
 
+#include "GameState.h"
+
+
 Game::Game()
     : window(sf::VideoMode(1280, 720), "Tower Defence"),
     currentSelection(SelectedTowerType::SNIPER),
@@ -14,7 +17,11 @@ Game::Game()
     gameover = false;
     playerHp = 100;
     money = 150;
+
     gamewon = false;
+
+
+
     spawnTimer = 0.f;
     spawnInterval = 2.f;
     waves = createWaves();
@@ -91,17 +98,24 @@ void Game::processEvents()
 
                 if (!isOccupied && currentSelection != SelectedTowerType::NONE)
                 {
-                    if (currentSelection == SelectedTowerType::SNIPER)
+
+                    if (currentSelection == SelectedTowerType::SNIPER && money >= SniperTower::PRICE)
+
                     {
                         towers.push_back(std::make_unique<SniperTower>(centerPos));
+                        money -= SniperTower::PRICE;
                     }
-                    else if (currentSelection == SelectedTowerType::MACHINE_GUN)
+
+                    else if (currentSelection == SelectedTowerType::MACHINE_GUN && money >= MachineGunTower::PRICE)
                     {
                         towers.push_back(std::make_unique<MachineGunTower>(centerPos));
+                        money -= MachineGunTower::PRICE;
                     }
-                    else if (currentSelection == SelectedTowerType::SHOT_GUN)
+
+                    else if (currentSelection == SelectedTowerType::SHOT_GUN && money >= ShotgunTower::PRICE)
                     {
                         towers.push_back(std::make_unique<ShotgunTower>(centerPos));
+                        money -= ShotgunTower::PRICE;
                     }
                 }
             }
@@ -216,9 +230,24 @@ void Game::update(float deltaTime)
         }
     }
 
+
+    
+    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    bool isHovering = false;
+    std::string hoveredName = "Brak";
+    int hoveredUpgradeCost = 0;
+
+
     for (auto& tower : towers)
     {
         tower->update(deltaTime, enemies, projectiles);
+
+        if (!isHovering && tower->getBounds().contains(mousePos))
+        {
+            isHovering = true;
+            hoveredName = tower->getName();
+            hoveredUpgradeCost = 100;       
+        }
     }
 
     for (auto& projectile : projectiles)
@@ -232,6 +261,11 @@ void Game::update(float deltaTime)
                 if (enemy.isAlive() && projectile.getBounds().intersects(enemy.getBounds()))
                 {
                     enemy.takeDamage(projectile.getDamage());
+                    if (!enemy.isAlive())
+                    {
+                        money += enemy.getReward();
+                        experience += enemy.getExp();
+                    }
                     projectile.deactivate();
                     break;
                 }
@@ -267,11 +301,54 @@ void Game::update(float deltaTime)
         gamewon = true;
         gameover = true;
     }
+
+
+    GameState currentState;
+    currentState.money = money;
+    currentState.playerHP = 100;
+    currentState.currentWave = 1;
+    currentState.expe = experience;
+
+    if (isHovering)
+    {
+        currentState.towerName = hoveredName;
+        currentState.upgradeCost = hoveredUpgradeCost;
+        currentState.isUpgrade = true; 
+    }
+    else if (currentSelection != SelectedTowerType::NONE)
+    {
+        currentState.isUpgrade = false; 
+        if (currentSelection == SelectedTowerType::SNIPER)
+        {
+            currentState.towerName = "Snajper";
+            currentState.upgradeCost = SniperTower::PRICE;
+        }
+        else if (currentSelection == SelectedTowerType::MACHINE_GUN)
+        {
+            currentState.towerName = "Karabin";
+            currentState.upgradeCost = MachineGunTower::PRICE;
+        }
+        else if (currentSelection == SelectedTowerType::SHOT_GUN)
+        {
+            currentState.towerName = "Strzelba";
+            currentState.upgradeCost = ShotgunTower::PRICE;
+        }
+    }
+    else
+    {
+        currentState.towerName = "Brak";
+        currentState.upgradeCost = 0;
+        currentState.isUpgrade = false;
+    }
+
+    hud.update(currentState);
+
 }
 
 void Game::render()
 {
     window.clear(sf::Color::Black);
+
 
     map.draw(window);
 
@@ -295,6 +372,10 @@ void Game::render()
         projectile.draw(window);
     }
 
+  
+   
+    hud.draw(window);
+
     window.display();
 }
 
@@ -303,7 +384,16 @@ void Game::handleKeyPress(sf::Keyboard::Key key)
     if (key == sf::Keyboard::Num1)
     {
         currentSelection = SelectedTowerType::SNIPER;
-        previewTexture.loadFromFile("assets/textures/sniper2.png");
+        previewTexture.loadFromFile("asets/textures/sniper2.png");
+        previewSprite.setTexture(previewTexture, true);
+
+        previewSprite.setColor(sf::Color(255, 255, 255, 150));
+        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
+    }
+    else if (key == sf::Keyboard::Num2)
+    {
+        currentSelection = SelectedTowerType::MACHINE_GUN;
+        previewTexture.loadFromFile("asets/textures/machine2.png");
         previewSprite.setTexture(previewTexture, true);
         previewSprite.setColor(sf::Color(255, 255, 255, 150));
         previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
@@ -311,11 +401,12 @@ void Game::handleKeyPress(sf::Keyboard::Key key)
     else if (key == sf::Keyboard::Num2)
     {
         currentSelection = SelectedTowerType::MACHINE_GUN;
-        previewTexture.loadFromFile("assets/textures/machine2.png");
+        previewTexture.loadFromFile("asets/textures/machine2.png");
         previewSprite.setTexture(previewTexture, true);
         previewSprite.setColor(sf::Color(255, 255, 255, 150));
         previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
     }
+
     else if (key == sf::Keyboard::Num3)
     {
         currentSelection = SelectedTowerType::SHOT_GUN;

@@ -2,9 +2,9 @@
 #include "Enemy.h"       
 #include "Projectile.h"  
 #include <cmath>         
-
-Tower::Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage)
-    : range(range), attackCooldown(cooldown), timeSinceLastAttack(0.0f), damage(damage) {
+#include <string>
+Tower::Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage, std::string n)
+    : range(range), attackCooldown(cooldown), timeSinceLastAttack(0.0f), damage(damage),name(n) {
 
     if (texture.loadFromFile(texturePath)) {
         sprite.setTexture(texture);
@@ -81,4 +81,7 @@ int Tower::getLevel() const {
 sf::FloatRect Tower::getBounds() const {
     
     return sprite.getGlobalBounds();
+}
+string Tower::getName() const {
+    return Tower::name;
 }

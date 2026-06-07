@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "HUD.h"
 #include <vector>
 #include <memory>
 #include "Tower.h"
@@ -18,19 +19,21 @@ private:
     bool gamewon;
     enum class GameMode {easy,medium,hard};
     GameMode gamemode;
+    int money;
+    int experience;
+    HUD hud;
     std::vector<Enemy> enemies;
     std::vector<Projectile> projectiles;
     std::vector<std::unique_ptr<Tower>> towers;
-
-    enum class SelectedTowerType { NONE, SNIPER, MACHINE_GUN, SHOT_GUN };
-    SelectedTowerType currentSelection;
-
-    
-    sf::Texture previewTexture;
-    sf::Sprite previewSprite;
     float spawnTimer;
     float spawnInterval;
+    enum class SelectedTowerType { NONE, SNIPER, MACHINE_GUN, SHOT_GUN };
+    SelectedTowerType currentSelection;
    
+
+    sf::Texture previewTexture;
+    sf::Sprite previewSprite;
+
     void processEvents();
     void handleKeyPress(sf::Keyboard::Key key);
     void update(float deltaTime);

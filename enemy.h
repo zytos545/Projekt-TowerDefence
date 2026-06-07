@@ -24,6 +24,7 @@ public:
     void takeDamage(int damage);
     bool isAlive() const;
     int getReward() const;
+    int getExp() const;
 private:
     sf::CircleShape shape;
     vector<sf::Vector2f> waypoints;
@@ -32,5 +33,8 @@ private:
     int hp;
     int maxHp;
     int reward;
+
+    int exp;
+
     EnemyType type;
 };
