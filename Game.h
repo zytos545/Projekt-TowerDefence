@@ -8,7 +8,6 @@
 #include "enemy.h"
 #include "Projectile.h"
 #include "Map.h"
-
 class Game {
 private:
     sf::RenderWindow window;
@@ -29,7 +28,6 @@ private:
     sf::Texture previewTexture;
     sf::Sprite previewSprite;
 
-
     void processEvents();
     void handleKeyPress(sf::Keyboard::Key key);
     void update(float deltaTime);
@@ -39,3 +37,4 @@ public:
     Game();
     void run();
 };
+

@@ -16,8 +16,9 @@ Enemy::Enemy(vector<sf::Vector2f> path, EnemyType type1)
         hp = maxHp;
         speed = 100.f;
         reward = 10;
+
         exp = 1;
-        shape.setFillColor(sf::Color::Red);
+
     }
     else if (type == Fast)
     {

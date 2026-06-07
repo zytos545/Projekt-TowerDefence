@@ -33,6 +33,8 @@ private:
     int hp;
     int maxHp;
     int reward;
+
     int exp;
+
     EnemyType type;
 };
