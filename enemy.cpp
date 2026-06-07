@@ -50,6 +50,11 @@ void Enemy::draw(sf::RenderWindow& window)
     window.draw(shape);
 }
 
+bool Enemy::reachedEnd() const
+{
+    return currentWaypoint >= waypoints.size();
+}
+
 void Enemy::update(float deltaTime)
 {
     if (currentWaypoint >= waypoints.size())

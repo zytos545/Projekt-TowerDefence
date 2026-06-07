@@ -13,6 +13,12 @@ private:
     sf::RenderWindow window;
 
     Map map;
+    int money; 
+    int playerHp;
+    bool gameover;
+    bool gamewon;
+    enum class GameMode {easy,medium,hard};
+    GameMode gamemode;
     int money;
     int experience;
     HUD hud;
@@ -32,6 +38,14 @@ private:
     void handleKeyPress(sf::Keyboard::Key key);
     void update(float deltaTime);
     void render();
+    vector<vector<EnemyType>>createWaves();
+    //fale przeciwnikow
+    vector<vector<EnemyType>> waves;
+int currentWave;
+int currentEnemyInWave;
+bool waveActive;
+float timeBetweenWaves;
+float waveBreakTimer;
 
 public:
     Game();
