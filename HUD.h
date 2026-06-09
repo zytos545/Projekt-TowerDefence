@@ -11,7 +11,7 @@ private:
     sf::Text hpText;
     sf::Text waveText;
     sf::Text towerInfoText;
-
+    sf::Text selectedTowerText;
 public:
     HUD();
     void update(const GameState& state);
