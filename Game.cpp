@@ -399,19 +399,12 @@ void Game::handleKeyPress(sf::Keyboard::Key key)
         previewSprite.setColor(sf::Color(255, 255, 255, 150));
         previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
     }
-    else if (key == sf::Keyboard::Num2)
-    {
-        currentSelection = SelectedTowerType::MACHINE_GUN;
-        previewTexture.loadFromFile("asets/textures/machine2.png");
-        previewSprite.setTexture(previewTexture, true);
-        previewSprite.setColor(sf::Color(255, 255, 255, 150));
-        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
-    }
+
 
     else if (key == sf::Keyboard::Num3)
     {
         currentSelection = SelectedTowerType::SHOT_GUN;
-        previewTexture.loadFromFile("assets/textures/shot2.png");
+        previewTexture.loadFromFile("asets/textures/shot2.png");
         previewSprite.setTexture(previewTexture, true);
         previewSprite.setColor(sf::Color(255, 255, 255, 150));
         previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
