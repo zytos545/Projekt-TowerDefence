@@ -16,6 +16,8 @@ private:
     GameState gameState;
     bool gameover;
     bool gamewon;
+    bool gameStarted;
+    bool waitingForNextWave;
     enum class GameMode {easy,medium,hard};
     GameMode gamemode;
     HUD hud;

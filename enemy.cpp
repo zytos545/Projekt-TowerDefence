@@ -15,26 +15,26 @@ Enemy::Enemy(vector<sf::Vector2f> path, EnemyType type1)
         maxHp = 100;
         hp = maxHp;
         speed = 100.f;
-        reward = 10;
+        reward = 1;
 
         exp = 1;
 
     }
     else if (type == Fast)
     {
-        maxHp = 60;
+        maxHp = 200;
         hp = maxHp;
         speed = 160.f;
-        reward = 15;
+        reward = 2;
         exp = 5;
         shape.setFillColor(sf::Color::Yellow);
     }
     else if (type == Tank)
     {
-        maxHp = 250;
+        maxHp = 500;
         hp = maxHp;
         speed = 60.f;
-        reward = 25;
+        reward = 3;
         exp = 10;
         shape.setFillColor(sf::Color::Blue);
     }
@@ -111,4 +111,8 @@ int Enemy::getReward() const
 }
 int Enemy::getExp() const {
     return exp;
+}
+EnemyType Enemy::getType() const
+{
+    return type;
 }

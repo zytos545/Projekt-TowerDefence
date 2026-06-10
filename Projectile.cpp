@@ -1,9 +1,8 @@
 #include "Projectile.h"
 #include <cmath>
 
-Projectile::Projectile(sf::Vector2f startPos, sf::Vector2f targetPos, int damage)
-    : position(startPos), targetPos(targetPos), damage(damage), speed(600.0f), isActive(true) {
-
+Projectile::Projectile(sf::Vector2f startPos, sf::Vector2f targetPos, int damage, float speed)
+    : position(startPos), targetPos(targetPos), damage(damage), speed(speed), isActive(true) {
     
     shape.setRadius(4.0f);
     shape.setFillColor(sf::Color::Yellow);

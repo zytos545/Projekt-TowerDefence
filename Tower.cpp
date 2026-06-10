@@ -3,8 +3,8 @@
 #include "Projectile.h"  
 #include <cmath>         
 #include <string>
-Tower::Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage, std::string n)
-    : range(range), attackCooldown(cooldown), timeSinceLastAttack(0.0f), damage(damage),name(n) {
+Tower::Tower(const std::string& texturePath, sf::Vector2f position, float range, float cooldown, int damage, std::string n,float speed)
+    : range(range), attackCooldown(cooldown), timeSinceLastAttack(0.0f), damage(damage),name(n),projectile_speed(speed) {
 
     if (texture.loadFromFile(texturePath)) {
         sprite.setTexture(texture);
@@ -48,7 +48,7 @@ void Tower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vect
         timeSinceLastAttack = 0.0f;
 
         sf::Vector2f targetPos = target->getPosition();
-        projectiles.push_back(Projectile(towerPos, targetPos, damage));
+        projectiles.push_back(Projectile(towerPos, targetPos, damage,projectile_speed));
 
       
         float angle = std::atan2(targetPos.y - towerPos.y, targetPos.x - towerPos.x) * 180.0f / 3.14159265f;

@@ -5,7 +5,7 @@
 
 // Shotgun: zasięg 100, strzał co 1.5s, obrażenia 20
 ShotgunTower::ShotgunTower(sf::Vector2f position)
-    : Tower("asets/textures/shot2.png", position, 100.0f, 1.5f, 20,"Strzelba") {
+    : Tower("asets/textures/shot2.png", position, 100.0f, 1.5f, 100,"Strzelba",600.f) {
 }
 
 void ShotgunTower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vector<Projectile>& projectiles) {
@@ -52,7 +52,7 @@ void ShotgunTower::update(float deltaTime, const std::vector<Enemy>& enemies, st
             );
 
             
-            projectiles.push_back(Projectile(getPosition(), fakeTarget, damage));
+            projectiles.push_back(Projectile(getPosition(), fakeTarget, damage,projectile_speed));
         }
 
         

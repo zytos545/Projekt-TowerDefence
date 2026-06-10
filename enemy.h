@@ -16,6 +16,7 @@ public:
     bool reachedEnd() const;
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
+    EnemyType getType() const;
 
     // metody dla wiezyczek i pociskow
     sf::Vector2f getPosition() const;

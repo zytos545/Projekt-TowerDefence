@@ -10,29 +10,26 @@
 
 Game::Game()
     : window(sf::VideoMode(1920, 1080), "Tower Defence"),
-    currentSelection(SelectedTowerType::SNIPER),
+    currentSelection(SelectedTowerType::MACHINE_GUN),
     map()
 {
+    waitingForNextWave = true;
     window.setFramerateLimit(60);
     gameover = false;
-    gameState.playerHP = 100;
-    gameState.money = 150;
-
+    gameState.playerHP = 200;
+    gameState.money = 650;
+    gameStarted = false;
     gamewon = false;
 
-
-
-    spawnTimer = 0.f;
-    spawnInterval = 2.f;
     waves = createWaves();
 
     gameState.currentWave = 0;
     currentEnemyInWave = 0;
 
-    waveActive = true;
+    waveActive = false;
 
     spawnTimer = 0.f;
-    spawnInterval = 1.5f;
+    spawnInterval = 0.5f;
 
     timeBetweenWaves = 5.f;
     waveBreakTimer = 0.f;
@@ -150,7 +147,7 @@ void Game::update(float deltaTime)
         return;
     }
 
-    if (gameState.currentWave < waves.size())
+    if (gameStarted && gameState.currentWave < waves.size())
     {
         if (waveActive)
         {
@@ -171,23 +168,17 @@ void Game::update(float deltaTime)
                 else
                 {
                     waveActive = false;
-                    waveBreakTimer = 0.f;
+                    waitingForNextWave = true;
                 }
             }
         }
         else
         {
-            if (enemies.empty())
+            if (enemies.empty() && waitingForNextWave)
             {
-                waveBreakTimer += deltaTime;
-
-                if (waveBreakTimer >= timeBetweenWaves)
-                {
-                    gameState.currentWave++;
-                    currentEnemyInWave = 0;
-                    waveActive = true;
-                    spawnTimer = 0.f;
-                }
+                gameState.currentWave++;
+                currentEnemyInWave = 0;
+                gameStarted = false;
             }
         }
     }
@@ -218,7 +209,12 @@ void Game::update(float deltaTime)
     {
         if (enemies[i].reachedEnd())
         {
+            if(enemies[i].getType() == EnemyType::Normal)
             gameState.playerHP--;
+            if (enemies[i].getType() == EnemyType::Fast)
+                gameState.playerHP-=3;
+            if (enemies[i].getType() == EnemyType::Tank)
+                gameState.playerHP -= 6;
 
             enemies.erase(enemies.begin() + i);
 
@@ -413,6 +409,16 @@ void Game::handleKeyPress(sf::Keyboard::Key key)
     {
         currentSelection = SelectedTowerType::NONE;
     }
+    else if (key == sf::Keyboard::Enter)
+    {
+        if (waitingForNextWave && gameState.currentWave < waves.size())
+        {
+            gameStarted = true;
+            waitingForNextWave = false;
+            waveActive = true;
+            spawnTimer = 0.f;
+        }
+    }
 }
 void addEnemiesToWave(vector<EnemyType>& wave, EnemyType type, int count)
 {
@@ -426,19 +432,23 @@ vector<vector<EnemyType>> Game::createWaves()
     vector<vector<EnemyType>> newWaves;
 
     vector<EnemyType> wave1;
-    addEnemiesToWave(wave1, Normal, 10);
+    addEnemiesToWave(wave1, Normal, 20);
     newWaves.push_back(wave1);
 
     vector<EnemyType> wave2;
-    addEnemiesToWave(wave2, Normal, 10);
-    addEnemiesToWave(wave2, Fast, 5);
+    addEnemiesToWave(wave2, Normal, 25);
     newWaves.push_back(wave2);
 
     vector<EnemyType> wave3;
-    addEnemiesToWave(wave3, Normal, 15);
+    addEnemiesToWave(wave3, Normal, 25);
     addEnemiesToWave(wave3, Fast, 8);
-    addEnemiesToWave(wave3, Tank, 3);
     newWaves.push_back(wave3);
+
+    vector<EnemyType> wave4;
+    addEnemiesToWave(wave4, Normal, 25);
+    addEnemiesToWave(wave4, Fast, 15);
+    newWaves.push_back(wave4);
+
 
     return newWaves;
 }

@@ -12,7 +12,7 @@ private:
     bool isActive;
 
 public:
-    Projectile(sf::Vector2f startPos, sf::Vector2f targetPos, int damage);
+    Projectile(sf::Vector2f startPos, sf::Vector2f targetPos, int damage,float speed);
 
     void update(float deltaTime);
     void draw(sf::RenderTarget& target) const;
