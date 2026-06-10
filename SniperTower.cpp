@@ -12,4 +12,4 @@ void SniperTower::update(float deltaTime, const std::vector<Enemy>& enemies, std
     Tower::update(deltaTime, enemies, projectiles);
     
     
-}s
+}
