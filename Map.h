@@ -15,4 +15,6 @@ public:
 private:
     vector<sf::RectangleShape> pathTiles;
     vector<sf::Vector2f> waypoints;
+    sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
 };
