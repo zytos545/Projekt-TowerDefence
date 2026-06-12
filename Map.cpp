@@ -168,3 +168,22 @@ void Map::draw(sf::RenderWindow& window)
         window.draw(pathTiles[i]);
     }
 }
+bool Map::isPositionOnPath(sf::FloatRect towerBounds) const
+{
+    
+    for (int i = 0; i < pathTiles.size(); i++)
+    {
+        
+        sf::FloatRect tileBounds = pathTiles[i].getGlobalBounds();
+
+   
+
+        if (towerBounds.intersects(tileBounds)) {
+            return true;
+        }
+        
+    }
+
+
+    return false;
+}

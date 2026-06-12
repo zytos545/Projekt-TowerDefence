@@ -38,12 +38,11 @@ private:
     void update(float deltaTime);
     void render();
     vector<vector<EnemyType>>createWaves();
-    //fale przeciwnikow
     vector<vector<EnemyType>> waves;
-int currentEnemyInWave;
-bool waveActive;
-float timeBetweenWaves;
-float waveBreakTimer;
+    int currentEnemyInWave;
+    bool waveActive;
+    float timeBetweenWaves;
+    float waveBreakTimer;
 
 public:
     Game();

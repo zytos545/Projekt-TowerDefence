@@ -92,8 +92,14 @@ void Game::processEvents()
                         break;
                     }
                 }
+                sf::FloatRect proposedBounds(
+                    centerPos.x - TILE_SIZE / 2.0f,
+                    centerPos.y - TILE_SIZE / 2.0f,
+                    static_cast<float>(TILE_SIZE),
+                    static_cast<float>(TILE_SIZE)
+                );
 
-                if (!isOccupied && currentSelection != SelectedTowerType::NONE)
+                if (!isOccupied && currentSelection != SelectedTowerType::NONE && !map.isPositionOnPath(proposedBounds))
                 {
 
                     if (currentSelection == SelectedTowerType::SNIPER && gameState.money >= SniperTower::PRICE)
