@@ -4,8 +4,14 @@
 
 Map::Map()
 {
+    backgroundTexture.loadFromFile("asets/textures/oblock_background.png");
+    backgroundSprite.setTexture(backgroundTexture);
+    backgroundSprite.setScale(
+        1920.f / backgroundTexture.getSize().x,
+        1080.f / backgroundTexture.getSize().y
+    );
     float nextx=0.f;
-    float nexty = 220.f;
+    float nexty = 400.f;
     const float tileSize = 70.f;
     sf::RectangleShape tile;
     for (int i = 0;i < 9;i++)
@@ -121,7 +127,7 @@ Map::Map()
         tile.setPosition(nextx, nexty);
         pathTiles.push_back(tile);
     }
-    for (int i = 0;i < 7;i++)
+    for (int i = 0;i < 3;i++)
     {
         if (i % 2 == 0)
             tile.setFillColor(sf::Color(150, 150, 150));
@@ -163,6 +169,7 @@ vector<sf::Vector2f> Map::getWaypoints()
 
 void Map::draw(sf::RenderWindow& window)
 {
+    window.draw(backgroundSprite);
     for (int i = 0; i < pathTiles.size(); i++)
     {
         window.draw(pathTiles[i]);
