@@ -13,8 +13,10 @@ private:
     sf::Text towerInfoText;
     sf::Text selectedTowerText;
     sf::Text WaveDis;
+    sf::Text menuButtonText;
 public:
     HUD();
     void update(const GameState& state);
     void draw(sf::RenderWindow& window);
+    sf::FloatRect getMenuButtonBounds() const;
 };

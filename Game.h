@@ -11,6 +11,12 @@
 #include "Map.h"
 class Game {
 private:
+    enum class MenuState { MENU, PLAYING };
+    MenuState State;
+
+    
+    sf::Font menuFont;
+    sf::Text playButtonText;
     sf::RenderWindow window;
     Map map;
     GameState gameState;

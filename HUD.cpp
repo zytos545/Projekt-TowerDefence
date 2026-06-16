@@ -43,6 +43,13 @@ HUD::HUD() {
     WaveDis.setCharacterSize(28);
     WaveDis.setFillColor(sf::Color::Yellow);
     WaveDis.setPosition(1400.f, 10.f);
+
+
+    menuButtonText.setFont(font); 
+    menuButtonText.setString("MENU");
+    menuButtonText.setCharacterSize(30);
+    menuButtonText.setFillColor(sf::Color::Yellow);
+    menuButtonText.setPosition(100.f, 20.f); 
     
 }
 
@@ -70,4 +77,9 @@ void HUD::draw(sf::RenderWindow& window) {
     window.draw(towerInfoText);
     window.draw(selectedTowerText);
     window.draw(WaveDis);
+    window.draw(menuButtonText);
+}
+sf::FloatRect HUD::getMenuButtonBounds() const
+{
+    return menuButtonText.getGlobalBounds();
 }
