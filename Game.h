@@ -13,8 +13,9 @@ class Game {
 private:
     enum class MenuState { MENU, PLAYING };
     MenuState State;
-
-    
+    sf::Text exitButtonText;
+    sf::Texture menuBgTexture;
+    sf::Sprite menuBgSprite;
     sf::Font menuFont;
     sf::Text playButtonText;
     sf::RenderWindow window;
