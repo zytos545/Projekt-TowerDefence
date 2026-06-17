@@ -28,7 +28,7 @@ public:
     int getExp() const;
     sf::Vector2f getVelocity() const;
 private:
-    sf::CircleShape shape;
+    sf::Sprite sprite;
     vector<sf::Vector2f> waypoints;
     int currentWaypoint;
     float speed;

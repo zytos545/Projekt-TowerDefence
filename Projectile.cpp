@@ -5,7 +5,7 @@ Projectile::Projectile(sf::Vector2f startPos, sf::Vector2f targetPos, int damage
     : position(startPos), targetPos(targetPos), damage(damage), speed(speed), isActive(true) {
     
     shape.setRadius(4.0f);
-    shape.setFillColor(sf::Color::Yellow);
+    shape.setFillColor(sf::Color::Black);
 
     
     shape.setOrigin(4.0f, 4.0f);

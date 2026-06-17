@@ -4,163 +4,63 @@
 
 Map::Map()
 {
+    pathTexture.loadFromFile("asets/textures/path_tile.png");
+
     backgroundTexture.loadFromFile("asets/textures/oblock_background.png");
     backgroundSprite.setTexture(backgroundTexture);
     backgroundSprite.setScale(
         1920.f / backgroundTexture.getSize().x,
         1080.f / backgroundTexture.getSize().y
     );
-    float nextx=0.f;
-    float nexty = 400.f;
-    const float tileSize = 70.f;
-    sf::RectangleShape tile;
-    for (int i = 0;i < 9;i++)
-    {
-        if(i%2==0)
-        tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        if (i == 0)
-            nextx = 0;
-        else
-            nextx += tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 2;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nexty -= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 2;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nextx -= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 7;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nexty += tileSize;
-        tile.setPosition(nextx,nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 2;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nextx -= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 2;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nexty -= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 10;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nextx+= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 3;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nexty -= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 2;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nextx+= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 5;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nexty += tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 3;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nextx-= tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0;i < 4;i++)
-    {
-        if (i % 2 == 0)
-            tile.setFillColor(sf::Color(150, 150, 150));
-        else
-            tile.setFillColor(sf::Color(150, 150, 200));
-        tile.setSize(sf::Vector2f(tileSize, tileSize));
-        nexty += tileSize;
-        tile.setPosition(nextx, nexty);
-        pathTiles.push_back(tile);
-    }
-    for (int i = 0; i < pathTiles.size(); i++)
-    {
-        sf::Vector2f position = pathTiles[i].getPosition();
-        sf::Vector2f size = pathTiles[i].getSize();
 
-        sf::Vector2f center(
-            position.x + size.x / 2.f,
-            position.y + size.y / 2.f
-        );
+    const float tileSize = 72.f;
 
-        waypoints.push_back(center);
-    }
+    float nextx = 0.f;
+    float nexty = 432.f;
+
+    auto addTile = [&](float x, float y)
+        {
+            sf::RectangleShape tile;
+            tile.setSize(sf::Vector2f(tileSize, tileSize));
+            tile.setPosition(x, y);
+
+            tile.setTexture(&pathTexture);
+
+            pathTiles.push_back(tile);
+
+            sf::Vector2f center(
+                x + tileSize / 2.f,
+                y + tileSize / 2.f
+            );
+
+            waypoints.push_back(center);
+        };
+
+    auto moveAndAdd = [&](int dx, int dy, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                nextx += dx * tileSize;
+                nexty += dy * tileSize;
+
+                addTile(nextx, nexty);
+            }
+        };
+
+    addTile(nextx, nexty);
+
+    moveAndAdd(1, 0, 8);   // w prawo
+    moveAndAdd(0, -1, 2);  // w górę
+    moveAndAdd(-1, 0, 2);  // w lewo
+    moveAndAdd(0, 1, 7);   // w dół
+    moveAndAdd(-1, 0, 2);  // w lewo
+    moveAndAdd(0, -1, 2);  // w górę
+    moveAndAdd(1, 0, 10);  // w prawo
+    moveAndAdd(0, -1, 3);  // w górę
+    moveAndAdd(1, 0, 2);   // w prawo
+    moveAndAdd(0, 1, 5);   // w dół
+    moveAndAdd(-1, 0, 3);  // w lewo
+    moveAndAdd(0, 1, 4);   // w dół
 }
 vector<sf::Vector2f> Map::getWaypoints()
 {
@@ -193,4 +93,16 @@ bool Map::isPositionOnPath(sf::FloatRect towerBounds) const
 
 
     return false;
+}
+sf::Vector2f Map::snapToGrid(sf::Vector2f worldPos) const
+{
+    const float tileSize = 72.f;
+
+    int gridX = static_cast<int>(worldPos.x / tileSize);
+    int gridY = static_cast<int>(worldPos.y / tileSize);
+
+    return sf::Vector2f(
+        gridX * tileSize + tileSize / 2.f,
+        gridY * tileSize + tileSize / 2.f
+    );
 }

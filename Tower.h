@@ -1,5 +1,5 @@
-
 #pragma once
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
@@ -10,12 +10,18 @@ class Projectile;
 
 class Tower {
 protected:
+    sf::SoundBuffer shotBuffer;
+    sf::Sound shotSound;
     sf::Sprite sprite;
     sf::Texture texture;
-    
+    sf::Vector2f getShootPosition(sf::Vector2f targetPos) const;
     float range;
     float attackCooldown;
     float timeSinceLastAttack;
+    bool isShootingAnimation;
+    float shootingAnimationTimer;
+    float shootingAnimationDuration;
+    sf::Vector2f baseScale;
     int damage;
     int level;
     int maxLevel;

@@ -13,6 +13,10 @@ Tower::Tower(const std::string& texturePath, sf::Vector2f position, float range,
     sf::FloatRect bounds = sprite.getLocalBounds();
     sprite.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
     sprite.setPosition(position);
+    isShootingAnimation = false;
+    shootingAnimationTimer = 0.f;
+    shootingAnimationDuration = 0.08f;
+    baseScale = sprite.getScale();
 }
 
 void Tower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vector<Projectile>& projectiles) {
@@ -50,6 +54,34 @@ void Tower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vect
         
         fire(*target, projectiles);
     }
+    if (isShootingAnimation)
+    {
+        shootingAnimationTimer += deltaTime;
+
+        float direction = 1.f;
+
+        if (sprite.getScale().x < 0)
+        {
+            direction = -1.f;
+        }
+
+        if (shootingAnimationTimer < shootingAnimationDuration)
+        {
+            sprite.setScale(
+                direction * std::abs(baseScale.x) * 1.18f,
+                baseScale.y * 1.18f
+            );
+        }
+        else
+        {
+            isShootingAnimation = false;
+
+            sprite.setScale(
+                direction * std::abs(baseScale.x),
+                baseScale.y
+            );
+        }
+    }
 }
 
 void Tower::draw(sf::RenderTarget& target) const {
@@ -81,14 +113,51 @@ sf::FloatRect Tower::getBounds() const {
 string Tower::getName() const {
     return Tower::name;
 }
-void Tower::fire(const Enemy& target, std::vector<Projectile>& projectiles) {
+
+sf::Vector2f Tower::getShootPosition(sf::Vector2f targetPos) const
+{
     sf::Vector2f towerPos = sprite.getPosition();
 
-    
+    float directionX;
+
+    if (targetPos.x < towerPos.x)
+    {
+        directionX = -1.f;
+    }
+    else
+    {
+        directionX = 1.f;
+    }
+
+    float offsetX = 35.f * directionX;
+    float offsetY = 5.f;
+
+    return sf::Vector2f(
+        towerPos.x + offsetX,
+        towerPos.y + offsetY
+    );
+}
+
+void Tower::fire(const Enemy& target, std::vector<Projectile>& projectiles)
+{
+    sf::Vector2f towerPos = sprite.getPosition();
     sf::Vector2f targetPos = target.getPosition();
 
-    projectiles.push_back(Projectile(towerPos, targetPos, damage, projectile_speed));
+    sf::Vector2f shootPos = getShootPosition(targetPos);
 
-    float angle = std::atan2(targetPos.y - towerPos.y, targetPos.x - towerPos.x) * 180.0f / 3.14159265f;
-    sprite.setRotation(angle);
+    projectiles.push_back(Projectile(shootPos, targetPos, damage, projectile_speed));
+
+    sf::Vector2f scale = sprite.getScale();
+
+    if (targetPos.x < towerPos.x)
+    {
+        sprite.setScale(-std::abs(scale.x), scale.y);
+    }
+    else
+    {
+        sprite.setScale(std::abs(scale.x), scale.y);
+    }
+    isShootingAnimation = true;
+    shootingAnimationTimer = 0.f;
+    shotSound.play();
 }

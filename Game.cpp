@@ -55,7 +55,7 @@ Game::Game()
 
     State = MenuState::MENU;
 
-    // Wczytaj czcionkę (użyj ścieżki do czcionki, którą już masz np. w HUD)
+   
     if (!menuFont.loadFromFile("asets/fonts/Jersey_25/Jersey.ttf")) {
       
     }
@@ -132,20 +132,12 @@ void Game::processEvents()
                         State = MenuState::MENU;
                         continue; 
                     }
-                    const int TILE_SIZE = 64;
-
-                    int gridX = static_cast<int>(worldPos.x) / TILE_SIZE;
-                    int gridY = static_cast<int>(worldPos.y) / TILE_SIZE;
-
-                    sf::Vector2f centerPos(
-                        gridX * TILE_SIZE + TILE_SIZE / 2.0f,
-                        gridY * TILE_SIZE + TILE_SIZE / 2.0f
-                    );
+                    sf::Vector2f centerPos = map.snapToGrid(worldPos);
 
                     bool isOccupied = false;
 
                     for (const auto& tower : towers)
-                    {
+                    {   
                         if (tower->getPosition() == centerPos)
                         {
                             isOccupied = true;
@@ -153,11 +145,13 @@ void Game::processEvents()
                         }
                     }
 
+                    const float TILE_SIZE = 70.f;
+
                     sf::FloatRect proposedBounds(
                         centerPos.x - TILE_SIZE / 2.0f,
                         centerPos.y - TILE_SIZE / 2.0f,
-                        static_cast<float>(TILE_SIZE),
-                        static_cast<float>(TILE_SIZE)
+                        TILE_SIZE,
+                        TILE_SIZE
                     );
 
                     if (!isOccupied && currentSelection != SelectedTowerType::NONE && !map.isPositionOnPath(proposedBounds))
@@ -205,6 +199,25 @@ void Game::processEvents()
     }
 }
 
+float getSpawnIntervalForEnemy(EnemyType type)
+{
+    if (type == EnemyType::Normal)
+    {
+        return 0.6f;
+    }
+    else if (type == EnemyType::Fast)
+    {
+        return 0.1f;
+    }
+    else if (type == EnemyType::Tank)
+    {
+        return 0.8f;
+    }
+
+    return 0.6f;
+}
+
+
 void Game::update(float deltaTime)
 {
     
@@ -225,51 +238,48 @@ void Game::update(float deltaTime)
         {
             spawnTimer += deltaTime;
 
-            if (spawnTimer >= spawnInterval)
+            if (currentEnemyInWave < waves[gameState.currentWave].size())
             {
-                if (currentEnemyInWave < waves[gameState.currentWave].size())
-                {
-                    EnemyType enemyType = waves[gameState.currentWave][currentEnemyInWave];
+                EnemyType enemyType = waves[gameState.currentWave][currentEnemyInWave];
 
+                float currentSpawnInterval = getSpawnIntervalForEnemy(enemyType);
+
+                if (spawnTimer >= currentSpawnInterval)
+                {
                     enemies.push_back(Enemy(map.getWaypoints(), enemyType));
 
                     currentEnemyInWave++;
 
                     spawnTimer = 0.f;
                 }
-                else
-                {
-                    waveActive = false;
-                    waitingForNextWave = true;
-                }
+            }
+            else
+            {
+                waveActive = false;
+                waitingForNextWave = true;
             }
         }
         else
         {
             if (enemies.empty() && waitingForNextWave)
             {
-                gameState.money += 100;
+               
+
                 gameState.currentWave++;
                 currentEnemyInWave = 0;
+
                 gameStarted = false;
+                waitingForNextWave = true;
+                spawnTimer = 0.f;
             }
         }
     }
 
+    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
     if (currentSelection != SelectedTowerType::NONE)
     {
-        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-
-        const int TILE_SIZE = 64;
-
-        int gridX = static_cast<int>(mousePos.x) / TILE_SIZE;
-        int gridY = static_cast<int>(mousePos.y) / TILE_SIZE;
-
-        sf::Vector2f snappedPos(
-            gridX * TILE_SIZE + TILE_SIZE / 2.0f,
-            gridY * TILE_SIZE + TILE_SIZE / 2.0f
-        );
-
+        sf::Vector2f snappedPos = map.snapToGrid(mousePos);
         previewSprite.setPosition(snappedPos);
     }
 
@@ -303,7 +313,6 @@ void Game::update(float deltaTime)
         }
     }
 
-    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     bool isHovering = false;
     std::string hoveredName = "Brak";
     int hoveredUpgradeCost = 0;
@@ -368,7 +377,7 @@ void Game::update(float deltaTime)
         enemies.end()
     );
 
-    if (gameState.currentWave >= waves.size() && enemies.empty())
+    if (gameState.currentWave >= waves.size() && enemies.empty() && gameState.playerHP > 0)
     {
         gamewon = true;
         gameover = true;
@@ -471,33 +480,70 @@ void Game::render()
 
 void Game::handleKeyPress(sf::Keyboard::Key key)
 {
-    if (key == sf::Keyboard::Num1)
-    {
-        currentSelection = SelectedTowerType::SNIPER;
-        previewTexture.loadFromFile("asets/textures/sniper2.png");
-        previewSprite.setTexture(previewTexture, true);
+if (key == sf::Keyboard::Num1)
+{
+    currentSelection = SelectedTowerType::SNIPER;
 
-        previewSprite.setColor(sf::Color(255, 255, 255, 150));
-        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
-    }
+    previewTexture.loadFromFile("asets/textures/sniper2.png");
+    previewSprite.setTexture(previewTexture, true);
+
+    previewSprite.setColor(sf::Color(255, 255, 255, 150));
+
+    previewSprite.setOrigin(
+        previewTexture.getSize().x / 2.f,
+        previewTexture.getSize().y / 2.f
+    );
+
+    float targetSize = 90.f;
+
+    previewSprite.setScale(
+        targetSize / previewTexture.getSize().x,
+        targetSize / previewTexture.getSize().y
+    );
+}
     else if (key == sf::Keyboard::Num2)
     {
         currentSelection = SelectedTowerType::MACHINE_GUN;
+
         previewTexture.loadFromFile("asets/textures/machine2.png");
         previewSprite.setTexture(previewTexture, true);
-        previewSprite.setColor(sf::Color(255, 255, 255, 150));
-        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
-    }
 
+        previewSprite.setColor(sf::Color(255, 255, 255, 150));
+
+        previewSprite.setOrigin(
+            previewTexture.getSize().x / 2.f,
+            previewTexture.getSize().y / 2.f
+        );
+
+        float targetSize = 90.f;
+
+        previewSprite.setScale(
+            targetSize / previewTexture.getSize().x,
+            targetSize / previewTexture.getSize().y
+        );
+    }
 
     else if (key == sf::Keyboard::Num3)
-    {
-        currentSelection = SelectedTowerType::SHOT_GUN;
-        previewTexture.loadFromFile("asets/textures/shot2.png");
-        previewSprite.setTexture(previewTexture, true);
-        previewSprite.setColor(sf::Color(255, 255, 255, 150));
-        previewSprite.setOrigin(previewTexture.getSize().x / 2.f, previewTexture.getSize().y / 2.f);
-    }
+{
+    currentSelection = SelectedTowerType::SHOT_GUN;
+
+    previewTexture.loadFromFile("asets/textures/shot2.png");
+    previewSprite.setTexture(previewTexture, true);
+
+    previewSprite.setColor(sf::Color(255, 255, 255, 150));
+
+    previewSprite.setOrigin(
+        previewTexture.getSize().x / 2.f,
+        previewTexture.getSize().y / 2.f
+    );
+
+    float targetSize = 90.f;
+
+    previewSprite.setScale(
+        targetSize / previewTexture.getSize().x,
+        targetSize / previewTexture.getSize().y
+    );
+}
     else if (key == sf::Keyboard::Escape)
     {
         currentSelection = SelectedTowerType::NONE;
@@ -535,7 +581,7 @@ vector<vector<EnemyType>> Game::createWaves()
     vector<vector<EnemyType>> newWaves;
 
     vector<EnemyType> wave1;
-    addEnemiesToWave(wave1, Normal, 20);
+    addEnemiesToWave(wave1, Normal, 10);
     newWaves.push_back(wave1);
 
     vector<EnemyType> wave2;
@@ -543,19 +589,24 @@ vector<vector<EnemyType>> Game::createWaves()
     newWaves.push_back(wave2);
 
     vector<EnemyType> wave3;
-    addEnemiesToWave(wave3, Normal, 25);
-    addEnemiesToWave(wave3, Fast, 8);
+    addEnemiesToWave(wave3, Normal, 10);
+    addEnemiesToWave(wave3, Fast, 5);
+    addEnemiesToWave(wave3, Normal, 10);
+    addEnemiesToWave(wave3, Fast, 5);
+    addEnemiesToWave(wave3, Normal, 10);
+    addEnemiesToWave(wave3, Fast, 5);
     newWaves.push_back(wave3);
 
     vector<EnemyType> wave4;
     addEnemiesToWave(wave4, Normal, 25);
-    addEnemiesToWave(wave4, Fast, 15);
+    addEnemiesToWave(wave4, Fast, 25);
+    addEnemiesToWave(wave4, Tank, 5);
     newWaves.push_back(wave4);
 
     vector<EnemyType> wave5;
     addEnemiesToWave(wave5, Normal, 25);
-    addEnemiesToWave(wave5, Fast, 15);
-    addEnemiesToWave(wave5, Tank, 5);
+    addEnemiesToWave(wave5, Fast, 20);
+    addEnemiesToWave(wave5, Tank, 15);
     newWaves.push_back(wave5);
 
     vector<EnemyType> wave6;

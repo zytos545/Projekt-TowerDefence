@@ -3,51 +3,81 @@
 
 Enemy::Enemy(vector<sf::Vector2f> path, EnemyType type1)
 {
+    static sf::Texture normalTexture;
+    static sf::Texture fastTexture;
+    static sf::Texture tankTexture;
+    static bool texturesLoaded = false;
+
+    if (!texturesLoaded)
+    {
+        normalTexture.loadFromFile("asets/textures/normal.png");
+        fastTexture.loadFromFile("asets/textures/fast.png");
+        tankTexture.loadFromFile("asets/textures/tank.png");
+
+        normalTexture.setSmooth(true);
+        fastTexture.setSmooth(true);
+        tankTexture.setSmooth(true);
+
+        texturesLoaded = true;
+    }
+
     this->type = type1;
     waypoints = path;
     currentWaypoint = 0;
+    velocity = sf::Vector2f(0.f, 0.f);
 
-    shape.setRadius(20.f);
-    shape.setOrigin(20.f, 20.f);
-
-    if (type == Normal)
+    if (type == EnemyType::Normal)
     {
         maxHp = 100;
         hp = maxHp;
         speed = 100.f;
-        reward = 1;
+        reward = 5;
+        exp = 5;
 
-        exp = 1;
-
+        sprite.setTexture(normalTexture);
     }
-    else if (type == Fast)
+    else if (type == EnemyType::Fast)
     {
         maxHp = 200;
         hp = maxHp;
         speed = 160.f;
-        reward = 2;
-        exp = 5;
-        shape.setFillColor(sf::Color::Yellow);
+        reward = 7;
+        exp = 7;
+
+        sprite.setTexture(fastTexture);
     }
-    else if (type == Tank)
+    else if (type == EnemyType::Tank)
     {
         maxHp = 500;
         hp = maxHp;
         speed = 60.f;
-        reward = 3;
-        exp = 10;
-        shape.setFillColor(sf::Color::Blue);
+        reward = 15;
+        exp = 12;
+
+        sprite.setTexture(tankTexture);
     }
+
+    sprite.setOrigin(
+        sprite.getLocalBounds().width / 2.f,
+        sprite.getLocalBounds().height / 2.f
+    );
+
+    float targetSize = 90.f;
+
+    sprite.setScale(
+        targetSize / sprite.getLocalBounds().width,
+        targetSize / sprite.getLocalBounds().height
+    );
 
     if (waypoints.size() > 0)
     {
-        shape.setPosition(waypoints[0]);
+        sprite.setPosition(waypoints[0]);
     }
 }
 
 void Enemy::draw(sf::RenderWindow& window)
 {
-    window.draw(shape);
+    window.draw(sprite);
 }
 
 bool Enemy::reachedEnd() const
@@ -62,7 +92,7 @@ void Enemy::update(float deltaTime)
         return;
     }
 
-    sf::Vector2f position = shape.getPosition();
+    sf::Vector2f position = sprite.getPosition();
     sf::Vector2f target = waypoints[currentWaypoint];
     sf::Vector2f direction = target - position;
 
@@ -77,17 +107,17 @@ void Enemy::update(float deltaTime)
     direction.x = direction.x / distance;
     direction.y = direction.y / distance;
     velocity = direction * speed;//velocity sluzy do obliczenia wyprzedzenia 
-    shape.move(direction * speed * deltaTime);
+    sprite.move(direction * speed * deltaTime);
 }
 
 sf::Vector2f Enemy::getPosition() const
 {
-    return shape.getPosition();
+    return sprite.getPosition();
 }
 
 sf::FloatRect Enemy::getBounds() const
 {
-    return shape.getGlobalBounds();
+    return sprite.getGlobalBounds();
 }
 
 void Enemy::takeDamage(int damage)
