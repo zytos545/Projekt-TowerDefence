@@ -12,8 +12,30 @@ Game::Game()
     currentSelection(SelectedTowerType::NONE),
     map()
 {
+    winTexture.loadFromFile("asets/textures/win_screen.png");
+    winSprite.setTexture(winTexture);
+    winSprite.setScale(
+        1920.f / winTexture.getSize().x,
+        1080.f / winTexture.getSize().y
+    );
+
+    loseTexture.loadFromFile("asets/textures/lose_screen.png");
+    loseSprite.setTexture(loseTexture);
+    loseSprite.setScale(
+        1920.f / loseTexture.getSize().x,
+        1080.f / loseTexture.getSize().y
+    );
     waitingForNextWave = true;
     window.setFramerateLimit(60);
+    if (backgroundMusic.openFromFile("asets/sounds/background_music.ogg"))
+    {
+        backgroundMusic.setLoop(true);
+        backgroundMusic.setVolume(15.f);
+    }
+    else
+    {
+        std::cerr << "Blad: Nie mozna zaladowac muzyki w tle!" << std::endl;
+    }
     gameover = false;
     gameState.playerHP = 100;
     gameState.money = 650;
@@ -282,6 +304,23 @@ float getSpawnIntervalForEnemy(EnemyType type)
 
 void Game::update(float deltaTime)
 {
+    if (backgroundMusic.getStatus() != sf::Music::Playing)
+    {
+        backgroundMusic.play();
+    }
+
+    if (State == MenuState::MENU)
+    {
+        backgroundMusic.setVolume(0.f); // ciszej w menu
+    }
+    else if (State == MenuState::PLAYING && !gameover)
+    {
+        backgroundMusic.setVolume(15.f); // normalnie w grze
+    }
+    else if (gameover)
+    {
+        backgroundMusic.stop(); // koniec gry
+    }
     // ---------------- OBSŁUGA MENU ----------------
     
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -342,7 +381,7 @@ void Game::update(float deltaTime)
 
                 gameState.currentWave++;
                 currentEnemyInWave = 0;
-
+                gameState.money += 50;
                 gameStarted = false;
                 waitingForNextWave = true;
                 spawnTimer = 0.f;
@@ -547,15 +586,13 @@ void Game::render()
 
         if (gameover)
         {
-            window.draw(winScreen);
-
             if (gamewon)
             {
-                window.draw(winText);
+                window.draw(winSprite);
             }
             else
             {
-                window.draw(loseText);
+                window.draw(loseSprite);
             }
         }
     }
@@ -645,16 +682,6 @@ if (key == sf::Keyboard::Num1)
             waveActive = true;
             spawnTimer = 0.f;
         }
-    }
-    else if (key == sf::Keyboard::F1)
-    {
-        gameover = true;
-        gamewon = true;
-    }
-    else if (key == sf::Keyboard::F2)
-    {
-        gameover = true;
-        gamewon = false;
     }
 }
 void addEnemiesToWave(vector<EnemyType>& wave, EnemyType type, int count)

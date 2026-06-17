@@ -30,7 +30,7 @@ MachineGunTower::MachineGunTower(sf::Vector2f position)
     if (shotBuffer.loadFromFile("asets/sounds/machine.wav"))
     {
         shotSound.setBuffer(shotBuffer);
-        shotSound.setVolume(25.f);
+        shotSound.setVolume(10.f);
     }
 }
 

@@ -32,7 +32,7 @@ ShotgunTower::ShotgunTower(sf::Vector2f position)
     if (shotBuffer.loadFromFile("asets/sounds/shotgun.wav"))
     {
         shotSound.setBuffer(shotBuffer);
-        shotSound.setVolume(40.f);
+        shotSound.setVolume(10.f);
     }
 }
 

@@ -4,6 +4,6 @@
 class MachineGunTower : public Tower {
 public:
     MachineGunTower(sf::Vector2f position);
-    static const int PRICE = 190;
+    static const int PRICE = 170;
     
 }; 

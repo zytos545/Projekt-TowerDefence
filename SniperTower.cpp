@@ -32,7 +32,7 @@ SniperTower::SniperTower(sf::Vector2f position)
     if (shotBuffer.loadFromFile("asets/sounds/sniper.wav"))
     {
         shotSound.setBuffer(shotBuffer);
-        shotSound.setVolume(50.f);
+        shotSound.setVolume(10.f);
     }
 }
 void SniperTower::fire(const Enemy& target, std::vector<Projectile>& projectiles)

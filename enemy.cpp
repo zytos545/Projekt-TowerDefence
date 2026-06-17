@@ -31,7 +31,7 @@ Enemy::Enemy(vector<sf::Vector2f> path, EnemyType type1)
         maxHp = 100;
         hp = maxHp;
         speed = 100.f;
-        reward = 5;
+        reward = 3;
         exp = 5;
 
         sprite.setTexture(normalTexture);
@@ -41,7 +41,7 @@ Enemy::Enemy(vector<sf::Vector2f> path, EnemyType type1)
         maxHp = 200;
         hp = maxHp;
         speed = 160.f;
-        reward = 7;
+        reward = 5;
         exp = 7;
 
         sprite.setTexture(fastTexture);
@@ -51,7 +51,7 @@ Enemy::Enemy(vector<sf::Vector2f> path, EnemyType type1)
         maxHp = 500;
         hp = maxHp;
         speed = 60.f;
-        reward = 15;
+        reward = 10;
         exp = 12;
 
         sprite.setTexture(tankTexture);
