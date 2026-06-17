@@ -39,8 +39,12 @@ private:
     float spawnInterval;
     enum class SelectedTowerType { NONE, SNIPER, MACHINE_GUN, SHOT_GUN };
     SelectedTowerType currentSelection;
-   
+    bool showControls = false; // Nasza flaga
 
+    sf::Text controlsButtonText;
+    sf::Text instructionsText;
+    sf::Text backButtonText;
+    
     sf::Texture previewTexture;
     sf::Sprite previewSprite;
 

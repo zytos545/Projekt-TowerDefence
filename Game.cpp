@@ -9,7 +9,7 @@
 
 Game::Game()
     : window(sf::VideoMode(1920, 1080), "Tower Defence"),
-    currentSelection(SelectedTowerType::MACHINE_GUN),
+    currentSelection(SelectedTowerType::NONE),
     map()
 {
     waitingForNextWave = true;
@@ -55,7 +55,7 @@ Game::Game()
 
     State = MenuState::MENU;
 
-    // Wczytaj czcionkę (użyj ścieżki do czcionki, którą już masz np. w HUD)
+    
     if (!menuFont.loadFromFile("asets/fonts/Jersey_25/Jersey.ttf")) {
       
     }
@@ -71,6 +71,37 @@ Game::Game()
     exitButtonText.setCharacterSize(100);
     exitButtonText.setFillColor(sf::Color::Red);
     exitButtonText.setPosition(55.f, 7.f);
+
+    
+    controlsButtonText.setFont(menuFont);
+    controlsButtonText.setString("Jak grac ?");
+    controlsButtonText.setCharacterSize(50);
+    controlsButtonText.setFillColor(sf::Color::White);
+    sf::FloatRect ctrlRect = controlsButtonText.getLocalBounds();
+    controlsButtonText.setOrigin(ctrlRect.left + ctrlRect.width / 2.0f, ctrlRect.top + ctrlRect.height / 2.0f);
+    controlsButtonText.setPosition(window.getSize().x / 2.0f, window.getSize().y / 2.0f + 100.f); 
+
+    // Instrukcje
+    instructionsText.setFont(menuFont);
+    instructionsText.setString(
+     "Witaj w grze Tower Defence!\n\n"
+     "Niezmiernie nam milo, ze zdecydowales sie zagrac w nasza gre.\n\n"
+     "Musisz obronic swoj gang przed drugim najezdajacym na ciebie przeciwnikiem.\n\n"
+     "Gre rozpoczynasz z startowym budzetem, kazda jednostka ma swoja cene.\n\n"
+     "Wybierz pod 1 , 2 lub 3 odpowiednie jednostki snajper, karabin, strzelba.\n\n"
+     "Nastepnie roztaw wedle uznania i odpal fale pod przyciskiem ENTER.\n\n"
+      "Gdy uda ci sie obronic przed pierwsza fala,\n\n rozpocznij kolejna w ten sam sposob.\n\n"
+    "Za eliminacje przeciwnikow otrzymujesz walute,\n\n"
+    "za jej pomoca mozesz postawic kolejne wiezyczki ablo ulepszyc obecne\n\n"
+    "Aby ulepszyc wiezyczke najedz na nia kursorem i nacisnij PPM\n\n"
+     "Zyczymy przyjemnej rozgrywki :)"
+    );
+    instructionsText.setCharacterSize(32);
+    instructionsText.setFillColor(sf::Color::White);
+    instructionsText.setPosition(600.f, 150.f);
+
+ 
+
     if (menuBgTexture.loadFromFile("asets/textures/menu_bg_.png"))
     {
         menuBgSprite.setTexture(menuBgTexture);
@@ -107,36 +138,49 @@ void Game::processEvents()
 
     while (window.pollEvent(event))
     {
-       
+
         if (event.type == sf::Event::Closed)
         {
             window.close();
         }
+
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+        
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (exitButtonText.getGlobalBounds().contains(mousePos))
+            {
+                if (State == MenuState::PLAYING) {
+                    State = MenuState::MENU; 
+                }
+                else if (State == MenuState::MENU) {
+                    if (showControls) showControls = false; 
+                    else window.close();                    
+                }
+                continue; 
+            }
+        }
+
         // ---------------- OBSŁUGA MENU ----------------
         if (State == MenuState::MENU)
         {
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
-                
-
-               
-                if (playButtonText.getGlobalBounds().contains(mousePos))
+                if (showControls == false) 
                 {
-                    State = MenuState::PLAYING;
+                    if (playButtonText.getGlobalBounds().contains(mousePos)) {
+                        State = MenuState::PLAYING;
+                    }
+                    if (controlsButtonText.getGlobalBounds().contains(mousePos)) {
+                        showControls = true;
+                    }
                 }
-                if (exitButtonText.getGlobalBounds().contains(mousePos))
-                {
-                    window.close(); 
-                }
-
             }
         }
         // ---------------- OBSŁUGA GRY ----------------
         else if (State == MenuState::PLAYING)
         {
-         
-
             if (event.type == sf::Event::KeyPressed)
             {
                 handleKeyPress(event.key.code);
@@ -144,22 +188,18 @@ void Game::processEvents()
 
             if (event.type == sf::Event::MouseButtonPressed)
             {
-                
+                // Budowanie wież
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i pixelPos(event.mouseButton.x, event.mouseButton.y);
                     sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
-                    if (hud.getMenuButtonBounds().contains(mousePos))
-                    {
-                        State = MenuState::MENU;
-                        continue; 
-                    }
+
                     sf::Vector2f centerPos = map.snapToGrid(worldPos);
 
                     bool isOccupied = false;
 
                     for (const auto& tower : towers)
-                    {   
+                    {
                         if (tower->getPosition() == centerPos)
                         {
                             isOccupied = true;
@@ -196,14 +236,14 @@ void Game::processEvents()
                     }
                 }
 
-                
+                // Ulepszanie wież
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                    sf::Vector2f mousePosRight = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
                     for (auto& tower : towers)
                     {
-                        if (tower->getBounds().contains(mousePos))
+                        if (tower->getBounds().contains(mousePosRight))
                         {
                             int upgradeCost = 100;
 
@@ -243,29 +283,23 @@ float getSpawnIntervalForEnemy(EnemyType type)
 void Game::update(float deltaTime)
 {
     // ---------------- OBSŁUGA MENU ----------------
+    
+    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    if (exitButtonText.getGlobalBounds().contains(mousePos)) exitButtonText.setFillColor(sf::Color::Red);
+    else exitButtonText.setFillColor(sf::Color::White);
+
+    
     if (State == MenuState::MENU)
     {
-        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        if (showControls == false)
+        {
+            if (playButtonText.getGlobalBounds().contains(mousePos)) playButtonText.setFillColor(sf::Color::Yellow);
+            else playButtonText.setFillColor(sf::Color::White);
 
-        if (playButtonText.getGlobalBounds().contains(mousePos))
-        {
-            playButtonText.setFillColor(sf::Color::Green);
+            if (controlsButtonText.getGlobalBounds().contains(mousePos)) controlsButtonText.setFillColor(sf::Color::Yellow);
+            else controlsButtonText.setFillColor(sf::Color::White);
         }
-        else
-        {
-            playButtonText.setFillColor(sf::Color::White);
-        }
-
-        if (exitButtonText.getGlobalBounds().contains(mousePos))
-        {
-            exitButtonText.setFillColor(sf::Color::Red);
-        }
-        else
-        {
-            exitButtonText.setFillColor(sf::Color::White);
-        }
-
-        return;
+        return; // Pamiętaj o tym return!
     }
 
     if (gameover)
@@ -316,7 +350,7 @@ void Game::update(float deltaTime)
         }
     }
 
-    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+ 
 
     if (currentSelection != SelectedTowerType::NONE)
     {
@@ -460,14 +494,6 @@ void Game::update(float deltaTime)
         currentState.isUpgrade = false;
     }
 
-    if (hud.getMenuButtonBounds().contains(mousePos))
-    {
-        hud.setMenuButtonHovered(true);
-    }
-    else
-    {
-        hud.setMenuButtonHovered(false);
-    }
 
     hud.update(currentState);
 }
@@ -479,10 +505,18 @@ void Game::render()
     // --- STAN MENU ---
     if (State == MenuState::MENU)
     {
-        
         window.draw(menuBgSprite);
-        window.draw(playButtonText);
-        window.draw(exitButtonText);
+       
+
+        if (showControls)
+        {
+            window.draw(instructionsText);
+        }
+        else
+        {
+            window.draw(playButtonText);
+            window.draw(controlsButtonText);
+        }
     }
     // --- STAN GRY ---
     else if (State == MenuState::PLAYING)
@@ -525,6 +559,9 @@ void Game::render()
             }
         }
     }
+
+    
+    window.draw(exitButtonText); 
 
     window.display();
 }
