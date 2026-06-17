@@ -4,6 +4,7 @@
 #include "SniperTower.h"
 #include "ShotgunTower.h"
 #include "MachinegunTower.h"
+#include <iostream>
 
 #include "GameState.h"
 
@@ -16,10 +17,30 @@ Game::Game()
     waitingForNextWave = true;
     window.setFramerateLimit(60);
     gameover = false;
-    gameState.playerHP = 200;
+    gameState.playerHP = 100;
     gameState.money = 650;
     gameStarted = false;
     gamewon = false;
+    winScreen.setSize(sf::Vector2f(1920.f, 1080.f));
+    winScreen.setFillColor(sf::Color::Black);
+    winScreen.setPosition(0.f, 0.f);
+
+    if (!winFont.loadFromFile("asets/fonts/Jersey_25/Jersey.ttf"))
+    {
+        std::cerr << "Blad: Nie mozna zaladowac czcionki konca gry!" << std::endl;
+    }
+
+    winText.setFont(winFont);
+    winText.setString("WYGRANA!");
+    winText.setCharacterSize(140);
+    winText.setFillColor(sf::Color::Green);
+    winText.setPosition(690.f, 420.f);
+
+    loseText.setFont(winFont);
+    loseText.setString("PRZEGRANA!");
+    loseText.setCharacterSize(140);
+    loseText.setFillColor(sf::Color::Red);
+    loseText.setPosition(610.f, 420.f);
 
     waves = createWaves();
 
@@ -176,6 +197,7 @@ void Game::update(float deltaTime)
         {
             if (enemies.empty() && waitingForNextWave)
             {
+                gameState.money += 100;
                 gameState.currentWave++;
                 currentEnemyInWave = 0;
                 gameStarted = false;
@@ -223,6 +245,8 @@ void Game::update(float deltaTime)
             if (gameState.playerHP <= 0)
             {
                 gameover = true;
+                gamewon = false;
+                return;
             }
         }
     }
@@ -373,6 +397,20 @@ void Game::render()
    
     hud.draw(window);
 
+    if (gameover)
+    {
+        window.draw(winScreen);
+
+        if (gamewon)
+        {
+            window.draw(winText);
+        }
+        else
+        {
+            window.draw(loseText);
+        }
+    }
+
     window.display();
 }
 
@@ -419,6 +457,16 @@ void Game::handleKeyPress(sf::Keyboard::Key key)
             spawnTimer = 0.f;
         }
     }
+    else if (key == sf::Keyboard::F1)
+    {
+        gameover = true;
+        gamewon = true;
+    }
+    else if (key == sf::Keyboard::F2)
+    {
+        gameover = true;
+        gamewon = false;
+    }
 }
 void addEnemiesToWave(vector<EnemyType>& wave, EnemyType type, int count)
 {
@@ -449,6 +497,35 @@ vector<vector<EnemyType>> Game::createWaves()
     addEnemiesToWave(wave4, Fast, 15);
     newWaves.push_back(wave4);
 
+    vector<EnemyType> wave5;
+    addEnemiesToWave(wave5, Normal, 25);
+    addEnemiesToWave(wave5, Fast, 15);
+    addEnemiesToWave(wave5, Tank, 5);
+    newWaves.push_back(wave5);
+
+    vector<EnemyType> wave6;
+    addEnemiesToWave(wave6, Normal, 15);
+    addEnemiesToWave(wave6, Fast, 15);
+    addEnemiesToWave(wave6, Normal, 15);
+    addEnemiesToWave(wave6, Tank, 10);
+    newWaves.push_back(wave6);
+
+    vector<EnemyType> wave7;
+    addEnemiesToWave(wave7, Normal, 20);
+    addEnemiesToWave(wave7, Fast, 20);
+    addEnemiesToWave(wave7, Normal, 15);
+    addEnemiesToWave(wave7, Tank, 15);
+    newWaves.push_back(wave7);
+
+    vector<EnemyType> wave8;
+    addEnemiesToWave(wave7, Normal, 20);
+    addEnemiesToWave(wave7, Fast, 20);
+    addEnemiesToWave(wave7, Tank, 10);
+    addEnemiesToWave(wave7, Normal, 15);
+    addEnemiesToWave(wave7, Tank, 10);
+    addEnemiesToWave(wave7, Fast, 20);
+    addEnemiesToWave(wave7, Normal, 50);
+    newWaves.push_back(wave7);
 
     return newWaves;
 }
