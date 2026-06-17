@@ -24,6 +24,10 @@ private:
     bool gamewon;
     bool gameStarted;
     bool waitingForNextWave;
+    sf::RectangleShape winScreen;
+    sf::Font winFont;
+    sf::Text winText;
+    sf::Text loseText;
     enum class GameMode {easy,medium,hard};
     GameMode gamemode;
     HUD hud;
