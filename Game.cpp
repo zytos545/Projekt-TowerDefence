@@ -55,18 +55,35 @@ Game::Game()
 
     State = MenuState::MENU;
 
-    // Wczytaj czcionkę (użyj ścieżki do czcionki, którą już masz np. w HUD)
     if (!menuFont.loadFromFile("asets/fonts/Jersey_25/Jersey.ttf")) {
       
     }
 
-    // Konfiguracja przycisku START
+  
     playButtonText.setFont(menuFont);
     playButtonText.setString("GRAJ");
-    playButtonText.setCharacterSize(50);
-    playButtonText.setFillColor(sf::Color::White);
-    // Ustawienie przycisku na środku (dostosuj koordynaty do rozmiaru swojego okna)
-    playButtonText.setPosition(960.f, 540.f);
+    playButtonText.setCharacterSize(70);
+    playButtonText.setFillColor(sf::Color::Green);
+
+    exitButtonText.setFont(menuFont); 
+    exitButtonText.setString("X");    
+    exitButtonText.setCharacterSize(100);
+    exitButtonText.setFillColor(sf::Color::Red);
+    exitButtonText.setPosition(55.f, 7.f);
+    if (menuBgTexture.loadFromFile("asets/textures/menu_bg_.png"))
+    {
+        menuBgSprite.setTexture(menuBgTexture);
+
+        
+        float scaleX = static_cast<float>(window.getSize().x) / menuBgTexture.getSize().x;
+        float scaleY = static_cast<float>(window.getSize().y) / menuBgTexture.getSize().y;
+
+        
+        menuBgSprite.setScale(scaleX, scaleY);
+    }
+    sf::FloatRect textRect = playButtonText.getLocalBounds();
+    playButtonText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+    playButtonText.setPosition(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
 }
 
 void Game::run()
@@ -106,6 +123,10 @@ void Game::processEvents()
                 if (playButtonText.getGlobalBounds().contains(mousePos))
                 {
                     State = MenuState::PLAYING;
+                }
+                if (exitButtonText.getGlobalBounds().contains(mousePos))
+                {
+                    window.close(); 
                 }
 
             }
@@ -207,12 +228,31 @@ void Game::processEvents()
 
 void Game::update(float deltaTime)
 {
-    
+    // ---------------- OBSŁUGA MENU ----------------
     if (State == MenuState::MENU)
     {
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+        if (playButtonText.getGlobalBounds().contains(mousePos))
+        {
+            playButtonText.setFillColor(sf::Color::Green);
+        }
+        else
+        {
+            playButtonText.setFillColor(sf::Color::White);
+        }
+
+        if (exitButtonText.getGlobalBounds().contains(mousePos))
+        {
+            exitButtonText.setFillColor(sf::Color::Red);
+        }
+        else
+        {
+            exitButtonText.setFillColor(sf::Color::White);
+        }
+
         return;
     }
-    
 
     if (gameover)
     {
@@ -277,7 +317,6 @@ void Game::update(float deltaTime)
     {
         enemy.update(deltaTime);
     }
-
 
     for (int i = 0; i < enemies.size(); i++)
     {
@@ -355,7 +394,6 @@ void Game::update(float deltaTime)
         projectiles.end()
     );
 
-    
     enemies.erase(
         std::remove_if(
             enemies.begin(),
@@ -412,6 +450,15 @@ void Game::update(float deltaTime)
         currentState.isUpgrade = false;
     }
 
+    if (hud.getMenuButtonBounds().contains(mousePos))
+    {
+        hud.setMenuButtonHovered(true);
+    }
+    else
+    {
+        hud.setMenuButtonHovered(false);
+    }
+
     hud.update(currentState);
 }
 
@@ -422,7 +469,10 @@ void Game::render()
     // --- STAN MENU ---
     if (State == MenuState::MENU)
     {
+        
+        window.draw(menuBgSprite);
         window.draw(playButtonText);
+        window.draw(exitButtonText);
     }
     // --- STAN GRY ---
     else if (State == MenuState::PLAYING)

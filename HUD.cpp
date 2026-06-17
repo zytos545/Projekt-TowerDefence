@@ -83,3 +83,14 @@ sf::FloatRect HUD::getMenuButtonBounds() const
 {
     return menuButtonText.getGlobalBounds();
 }
+void HUD::setMenuButtonHovered(bool isHovered)
+{
+    if (isHovered)
+    {
+        menuButtonText.setFillColor(sf::Color::Yellow);
+    }
+    else
+    {
+        menuButtonText.setFillColor(sf::Color::White); 
+    }
+}
