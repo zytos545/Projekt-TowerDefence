@@ -47,12 +47,8 @@ void Tower::update(float deltaTime, const std::vector<Enemy>& enemies, std::vect
     if (target != nullptr && timeSinceLastAttack >= attackCooldown) {
         timeSinceLastAttack = 0.0f;
 
-        sf::Vector2f targetPos = target->getPosition();
-        projectiles.push_back(Projectile(towerPos, targetPos, damage,projectile_speed));
-
-      
-        float angle = std::atan2(targetPos.y - towerPos.y, targetPos.x - towerPos.x) * 180.0f / 3.14159265f;
-        sprite.setRotation(angle);
+        
+        fire(*target, projectiles);
     }
 }
 
@@ -84,4 +80,15 @@ sf::FloatRect Tower::getBounds() const {
 }
 string Tower::getName() const {
     return Tower::name;
+}
+void Tower::fire(const Enemy& target, std::vector<Projectile>& projectiles) {
+    sf::Vector2f towerPos = sprite.getPosition();
+
+    
+    sf::Vector2f targetPos = target.getPosition();
+
+    projectiles.push_back(Projectile(towerPos, targetPos, damage, projectile_speed));
+
+    float angle = std::atan2(targetPos.y - towerPos.y, targetPos.x - towerPos.x) * 180.0f / 3.14159265f;
+    sprite.setRotation(angle);
 }

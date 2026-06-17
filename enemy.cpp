@@ -76,7 +76,7 @@ void Enemy::update(float deltaTime)
 
     direction.x = direction.x / distance;
     direction.y = direction.y / distance;
-
+    velocity = direction * speed;//velocity sluzy do obliczenia wyprzedzenia 
     shape.move(direction * speed * deltaTime);
 }
 
@@ -115,4 +115,8 @@ int Enemy::getExp() const {
 EnemyType Enemy::getType() const
 {
     return type;
+}
+sf::Vector2f Enemy::getVelocity() const
+{
+    return velocity;
 }

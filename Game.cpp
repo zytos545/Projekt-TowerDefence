@@ -5,9 +5,7 @@
 #include "ShotgunTower.h"
 #include "MachinegunTower.h"
 #include <iostream>
-
-#include "GameState.h"
-
+#include "HUD.h"
 
 Game::Game()
     : window(sf::VideoMode(1920, 1080), "Tower Defence"),
@@ -54,6 +52,21 @@ Game::Game()
 
     timeBetweenWaves = 5.f;
     waveBreakTimer = 0.f;
+
+    State = MenuState::MENU;
+
+    // Wczytaj czcionkę (użyj ścieżki do czcionki, którą już masz np. w HUD)
+    if (!menuFont.loadFromFile("asets/fonts/Jersey_25/Jersey.ttf")) {
+      
+    }
+
+    // Konfiguracja przycisku START
+    playButtonText.setFont(menuFont);
+    playButtonText.setString("GRAJ");
+    playButtonText.setCharacterSize(50);
+    playButtonText.setFillColor(sf::Color::White);
+    // Ustawienie przycisku na środku (dostosuj koordynaty do rozmiaru swojego okna)
+    playButtonText.setPosition(960.f, 540.f);
 }
 
 void Game::run()
@@ -76,83 +89,114 @@ void Game::processEvents()
 
     while (window.pollEvent(event))
     {
+       
         if (event.type == sf::Event::Closed)
         {
             window.close();
         }
-
-        if (event.type == sf::Event::KeyPressed)
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        // ---------------- OBSŁUGA MENU ----------------
+        if (State == MenuState::MENU)
         {
-            handleKeyPress(event.key.code);
-        }
-
-        if (event.type == sf::Event::MouseButtonPressed)
-        {
-            if (event.mouseButton.button == sf::Mouse::Left)
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
-                sf::Vector2i pixelPos(event.mouseButton.x, event.mouseButton.y);
-                sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+                
 
-                const int TILE_SIZE = 64;
-
-                int gridX = static_cast<int>(worldPos.x) / TILE_SIZE;
-                int gridY = static_cast<int>(worldPos.y) / TILE_SIZE;
-
-                sf::Vector2f centerPos(
-                    gridX * TILE_SIZE + TILE_SIZE / 2.0f,
-                    gridY * TILE_SIZE + TILE_SIZE / 2.0f
-                );
-
-                bool isOccupied = false;
-
-                for (const auto& tower : towers)
+               
+                if (playButtonText.getGlobalBounds().contains(mousePos))
                 {
-                    if (tower->getPosition() == centerPos)
-                    {
-                        isOccupied = true;
-                        break;
-                    }
+                    State = MenuState::PLAYING;
                 }
 
-                if (!isOccupied && currentSelection != SelectedTowerType::NONE)
-                {
+            }
+        }
+        // ---------------- OBSŁUGA GRY ----------------
+        else if (State == MenuState::PLAYING)
+        {
+         
 
-                    if (currentSelection == SelectedTowerType::SNIPER && gameState.money >= SniperTower::PRICE)
-
-                    {
-                        towers.push_back(std::make_unique<SniperTower>(centerPos));
-                        gameState.money -= SniperTower::PRICE;
-                    }
-
-                    else if (currentSelection == SelectedTowerType::MACHINE_GUN && gameState.money >= MachineGunTower::PRICE)
-                    {
-                        towers.push_back(std::make_unique<MachineGunTower>(centerPos));
-                        gameState.money -= MachineGunTower::PRICE;
-                    }
-
-                    else if (currentSelection == SelectedTowerType::SHOT_GUN && gameState.money >= ShotgunTower::PRICE)
-                    {
-                        towers.push_back(std::make_unique<ShotgunTower>(centerPos));
-                        gameState.money -= ShotgunTower::PRICE;
-                    }
-                }
+            if (event.type == sf::Event::KeyPressed)
+            {
+                handleKeyPress(event.key.code);
             }
 
-            if (event.mouseButton.button == sf::Mouse::Right)
+            if (event.type == sf::Event::MouseButtonPressed)
             {
-                sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-
-                for (auto& tower : towers)
+                
+                if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    if (tower->getBounds().contains(mousePos))
+                    sf::Vector2i pixelPos(event.mouseButton.x, event.mouseButton.y);
+                    sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+                    if (hud.getMenuButtonBounds().contains(mousePos))
                     {
-                        int upgradeCost = 100;
+                        State = MenuState::MENU;
+                        continue; 
+                    }
+                    const int TILE_SIZE = 64;
 
-                        if (gameState.money >= upgradeCost && tower->getLevel() < 3)
+                    int gridX = static_cast<int>(worldPos.x) / TILE_SIZE;
+                    int gridY = static_cast<int>(worldPos.y) / TILE_SIZE;
+
+                    sf::Vector2f centerPos(
+                        gridX * TILE_SIZE + TILE_SIZE / 2.0f,
+                        gridY * TILE_SIZE + TILE_SIZE / 2.0f
+                    );
+
+                    bool isOccupied = false;
+
+                    for (const auto& tower : towers)
+                    {
+                        if (tower->getPosition() == centerPos)
                         {
-                            gameState.money -= upgradeCost;
-                            tower->upgrade();
+                            isOccupied = true;
                             break;
+                        }
+                    }
+
+                    sf::FloatRect proposedBounds(
+                        centerPos.x - TILE_SIZE / 2.0f,
+                        centerPos.y - TILE_SIZE / 2.0f,
+                        static_cast<float>(TILE_SIZE),
+                        static_cast<float>(TILE_SIZE)
+                    );
+
+                    if (!isOccupied && currentSelection != SelectedTowerType::NONE && !map.isPositionOnPath(proposedBounds))
+                    {
+                        if (currentSelection == SelectedTowerType::SNIPER && gameState.money >= SniperTower::PRICE)
+                        {
+                            towers.push_back(std::make_unique<SniperTower>(centerPos));
+                            gameState.money -= SniperTower::PRICE;
+                        }
+                        else if (currentSelection == SelectedTowerType::MACHINE_GUN && gameState.money >= MachineGunTower::PRICE)
+                        {
+                            towers.push_back(std::make_unique<MachineGunTower>(centerPos));
+                            gameState.money -= MachineGunTower::PRICE;
+                        }
+                        else if (currentSelection == SelectedTowerType::SHOT_GUN && gameState.money >= ShotgunTower::PRICE)
+                        {
+                            towers.push_back(std::make_unique<ShotgunTower>(centerPos));
+                            gameState.money -= ShotgunTower::PRICE;
+                        }
+                    }
+                }
+
+                
+                if (event.mouseButton.button == sf::Mouse::Right)
+                {
+                    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+                    for (auto& tower : towers)
+                    {
+                        if (tower->getBounds().contains(mousePos))
+                        {
+                            int upgradeCost = 100;
+
+                            if (gameState.money >= upgradeCost && tower->getLevel() < 3)
+                            {
+                                gameState.money -= upgradeCost;
+                                tower->upgrade();
+                                break;
+                            }
                         }
                     }
                 }
@@ -163,6 +207,13 @@ void Game::processEvents()
 
 void Game::update(float deltaTime)
 {
+    
+    if (State == MenuState::MENU)
+    {
+        return;
+    }
+    
+
     if (gameover)
     {
         return;
@@ -226,15 +277,16 @@ void Game::update(float deltaTime)
     {
         enemy.update(deltaTime);
     }
-//tracenie HP gracza
+
+
     for (int i = 0; i < enemies.size(); i++)
     {
         if (enemies[i].reachedEnd())
         {
-            if(enemies[i].getType() == EnemyType::Normal)
-            gameState.playerHP--;
+            if (enemies[i].getType() == EnemyType::Normal)
+                gameState.playerHP--;
             if (enemies[i].getType() == EnemyType::Fast)
-                gameState.playerHP-=3;
+                gameState.playerHP -= 3;
             if (enemies[i].getType() == EnemyType::Tank)
                 gameState.playerHP -= 6;
 
@@ -251,13 +303,10 @@ void Game::update(float deltaTime)
         }
     }
 
-
-    
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     bool isHovering = false;
     std::string hoveredName = "Brak";
     int hoveredUpgradeCost = 0;
-
 
     for (auto& tower : towers)
     {
@@ -267,7 +316,7 @@ void Game::update(float deltaTime)
         {
             isHovering = true;
             hoveredName = tower->getName();
-            hoveredUpgradeCost = 100;       
+            hoveredUpgradeCost = 100;
         }
     }
 
@@ -305,7 +354,8 @@ void Game::update(float deltaTime)
         ),
         projectiles.end()
     );
-//kasowanie przeciwnikow
+
+    
     enemies.erase(
         std::remove_if(
             enemies.begin(),
@@ -317,12 +367,12 @@ void Game::update(float deltaTime)
         ),
         enemies.end()
     );
+
     if (gameState.currentWave >= waves.size() && enemies.empty())
     {
         gamewon = true;
         gameover = true;
     }
-
 
     GameState currentState;
     currentState.money = gameState.money;
@@ -334,11 +384,11 @@ void Game::update(float deltaTime)
     {
         currentState.towerName = hoveredName;
         currentState.upgradeCost = hoveredUpgradeCost;
-        currentState.isUpgrade = true; 
+        currentState.isUpgrade = true;
     }
     else if (currentSelection != SelectedTowerType::NONE)
     {
-        currentState.isUpgrade = false; 
+        currentState.isUpgrade = false;
         if (currentSelection == SelectedTowerType::SNIPER)
         {
             currentState.towerName = "Snajper";
@@ -363,51 +413,56 @@ void Game::update(float deltaTime)
     }
 
     hud.update(currentState);
-
 }
 
 void Game::render()
 {
     window.clear(sf::Color::Black);
 
-
-    map.draw(window);
-
-    if (currentSelection != SelectedTowerType::NONE)
+    // --- STAN MENU ---
+    if (State == MenuState::MENU)
     {
-        window.draw(previewSprite);
+        window.draw(playButtonText);
     }
-
-    for (auto& enemy : enemies)
+    // --- STAN GRY ---
+    else if (State == MenuState::PLAYING)
     {
-        enemy.draw(window);
-    }
+        map.draw(window);
 
-    for (const auto& tower : towers)
-    {
-        tower->draw(window);
-    }
-
-    for (const auto& projectile : projectiles)
-    {
-        projectile.draw(window);
-    }
-
-  
-   
-    hud.draw(window);
-
-    if (gameover)
-    {
-        window.draw(winScreen);
-
-        if (gamewon)
+        if (currentSelection != SelectedTowerType::NONE)
         {
-            window.draw(winText);
+            window.draw(previewSprite);
         }
-        else
+
+        for (auto& enemy : enemies)
         {
-            window.draw(loseText);
+            enemy.draw(window);
+        }
+
+        for (const auto& tower : towers)
+        {
+            tower->draw(window);
+        }
+
+        for (const auto& projectile : projectiles)
+        {
+            projectile.draw(window);
+        }
+
+        hud.draw(window);
+
+        if (gameover)
+        {
+            window.draw(winScreen);
+
+            if (gamewon)
+            {
+                window.draw(winText);
+            }
+            else
+            {
+                window.draw(loseText);
+            }
         }
     }
 
@@ -518,14 +573,14 @@ vector<vector<EnemyType>> Game::createWaves()
     newWaves.push_back(wave7);
 
     vector<EnemyType> wave8;
-    addEnemiesToWave(wave7, Normal, 20);
-    addEnemiesToWave(wave7, Fast, 20);
-    addEnemiesToWave(wave7, Tank, 10);
-    addEnemiesToWave(wave7, Normal, 15);
-    addEnemiesToWave(wave7, Tank, 10);
-    addEnemiesToWave(wave7, Fast, 20);
-    addEnemiesToWave(wave7, Normal, 50);
-    newWaves.push_back(wave7);
+    addEnemiesToWave(wave8, Normal, 20);
+    addEnemiesToWave(wave8, Fast, 20);
+    addEnemiesToWave(wave8, Tank, 10);
+    addEnemiesToWave(wave8, Normal, 15);
+    addEnemiesToWave(wave8, Tank, 10);
+    addEnemiesToWave(wave8, Fast, 20);
+    addEnemiesToWave(wave8, Normal, 50);
+    newWaves.push_back(wave8);
 
     return newWaves;
 }

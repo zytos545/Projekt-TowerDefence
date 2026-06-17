@@ -38,6 +38,19 @@ HUD::HUD() {
     selectedTowerText.setCharacterSize(32);
     selectedTowerText.setFillColor(sf::Color::Magenta);
     selectedTowerText.setPosition(1400.f,650.f);
+
+    WaveDis.setFont(font);
+    WaveDis.setCharacterSize(28);
+    WaveDis.setFillColor(sf::Color::Yellow);
+    WaveDis.setPosition(1400.f, 10.f);
+
+
+    menuButtonText.setFont(font); 
+    menuButtonText.setString("MENU");
+    menuButtonText.setCharacterSize(30);
+    menuButtonText.setFillColor(sf::Color::Yellow);
+    menuButtonText.setPosition(100.f, 20.f); 
+    
 }
 
 void HUD::update(const GameState& state) {
@@ -45,7 +58,7 @@ void HUD::update(const GameState& state) {
     expText.setString("EXP: " + std::to_string(state.expe));
     hpText.setString("HP: " + std::to_string(state.playerHP));
     waveText.setString("Fala: " + std::to_string(state.currentWave));
-
+    WaveDis.setString(L"Sterowanie:\nEnter aby rozpocząć falę.\nPod 1, 2,  3 znajduje się:\nsnajper, karabin i strzelba.\nNaciśnij esc aby anulować wybór.\nNaciśnij PPM na wieżę aby ją ulepszyć.");
     if (state.towerName != "Brak" ) {
         towerInfoText.setString("Koszt: " + std::to_string(state.upgradeCost));
         selectedTowerText.setString("Typ: " + state.towerName);
@@ -63,4 +76,10 @@ void HUD::draw(sf::RenderWindow& window) {
     window.draw(waveText);
     window.draw(towerInfoText);
     window.draw(selectedTowerText);
+    window.draw(WaveDis);
+    window.draw(menuButtonText);
+}
+sf::FloatRect HUD::getMenuButtonBounds() const
+{
+    return menuButtonText.getGlobalBounds();
 }

@@ -11,6 +11,12 @@
 #include "Map.h"
 class Game {
 private:
+    enum class MenuState { MENU, PLAYING };
+    MenuState State;
+
+    
+    sf::Font menuFont;
+    sf::Text playButtonText;
     sf::RenderWindow window;
     Map map;
     GameState gameState;
@@ -42,12 +48,11 @@ private:
     void update(float deltaTime);
     void render();
     vector<vector<EnemyType>>createWaves();
-    //fale przeciwnikow
     vector<vector<EnemyType>> waves;
-int currentEnemyInWave;
-bool waveActive;
-float timeBetweenWaves;
-float waveBreakTimer;
+    int currentEnemyInWave;
+    bool waveActive;
+    float timeBetweenWaves;
+    float waveBreakTimer;
 
 public:
     Game();

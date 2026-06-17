@@ -26,6 +26,7 @@ public:
     bool isAlive() const;
     int getReward() const;
     int getExp() const;
+    sf::Vector2f getVelocity() const;
 private:
     sf::CircleShape shape;
     vector<sf::Vector2f> waypoints;
@@ -34,7 +35,7 @@ private:
     int hp;
     int maxHp;
     int reward;
-
+    sf::Vector2f velocity;
     int exp;
 
     EnemyType type;

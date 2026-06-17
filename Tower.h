@@ -32,4 +32,5 @@ public:
     float getRange() const;
     std::string getName() const;
     sf::FloatRect getBounds() const;
+    virtual void fire(const Enemy& target, std::vector<Projectile>& projectiles);
 };
